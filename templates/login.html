@@ -9,12 +9,12 @@
 <!-- Login -->
 <div id="tab-login" class="tab-content active">
   <div class="section" style="max-width:440px;">
-    <form method="post">
+    <form method="post" autocomplete="off">
       <input type="hidden" name="action" value="login">
       <label>{{ t("email", lang) }}</label>
-      <input type="email" name="email" required>
+      <input type="email" name="email" required autocomplete="new-email" placeholder=" ">
       <label>{{ t("password", lang) }}</label>
-      <input type="password" name="password" required>
+      <input type="password" name="password" required autocomplete="new-password" placeholder=" ">
       <button type="submit" class="btn btn-primary" style="width:100%;margin-top:6px;">{{ t("btn_login", lang) }}</button>
     </form>
   </div>
@@ -23,14 +23,14 @@
 <!-- Signup -->
 <div id="tab-signup" class="tab-content">
   <div class="section" style="max-width:440px;">
-    <form method="post">
+    <form method="post" autocomplete="off">
       <input type="hidden" name="action" value="signup">
       <label>{{ t("email", lang) }}</label>
-      <input type="email" name="email" required>
+      <input type="email" name="email" required autocomplete="new-email" placeholder=" ">
       <label>{{ t("password_min", lang) }}</label>
-      <input type="password" name="password" required minlength="8">
+      <input type="password" name="password" required minlength="8" autocomplete="new-password" placeholder=" ">
       <label>{{ t("password_repeat", lang) }}</label>
-      <input type="password" name="password2" required minlength="8">
+      <input type="password" name="password2" required minlength="8" autocomplete="new-password" placeholder=" ">
       <button type="submit" class="btn btn-primary" style="width:100%;margin-top:6px;">{{ t("btn_signup", lang) }}</button>
     </form>
   </div>

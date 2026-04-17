@@ -1,34 +1,33 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="sidebar-info">
-  {{ t("active_provider", lang) }}: <strong>{{ provider }}</strong> · {{ t("model", lang) }}: <strong>{{ model }}</strong>
-  · {{ reg_count }} {{ t("regulations_on_file", lang) }}
-</div>
-
 <!-- 1. Unternehmensdaten -->
-<div class="section">
+<div class="section section-green">
   <h2>{{ t("section_company_data", lang) }}</h2>
-  <p style="font-size:13px;color:#888;margin-bottom:16px;">{{ t("section_company_hint", lang) }}</p>
+  <p style="font-size:13px;color:#2e7d32;margin-bottom:16px;">{{ t("section_company_hint", lang) }}</p>
 
-  <form method="post" action="{{ url_for('save_company') }}">
+  <form method="post" action="{{ url_for('save_company') }}" onsubmit="syncAllHidden()">
     <div class="grid-2">
       <div>
         <label>{{ t("field_name", lang) }}</label>
         <input type="text" name="name" value="{{ company.get('name','') or '' }}">
 
         <label>{{ t("field_employees_total", lang) }}</label>
-        <input type="number" name="employees" min="0" step="10" value="{{ company.get('employees',0)|int }}">
+        <input type="text" class="fmt-int" data-hidden="employees" value="{{ '{:,}'.format(company.get('employees',0)|int).replace(',', ' ') if company.get('employees',0)|int > 0 else '' }}" inputmode="numeric">
+        <input type="hidden" name="employees" value="{{ company.get('employees',0)|int }}">
 
         <label>{{ t("field_employees_de", lang) }}</label>
-        <input type="number" name="employees_de" min="0" step="10" value="{{ company.get('employees_de',0)|int }}">
+        <input type="text" class="fmt-int" data-hidden="employees_de" value="{{ '{:,}'.format(company.get('employees_de',0)|int).replace(',', ' ') if company.get('employees_de',0)|int > 0 else '' }}" inputmode="numeric">
+        <input type="hidden" name="employees_de" value="{{ company.get('employees_de',0)|int }}">
         <p class="help-text">{{ t("field_employees_de_help", lang) }}</p>
 
         <label>{{ t("field_revenue", lang) }}</label>
-        <input type="number" name="revenue_eur" min="0" step="1000000" value="{{ company.get('revenue_eur',0)|int }}">
+        <input type="text" class="fmt-cur" data-hidden="revenue_eur" value="{{ '{:,.2f}'.format(company.get('revenue_eur',0)|float).replace(',', 'X').replace('.', ',').replace('X', '.') if company.get('revenue_eur',0)|float > 0 else '' }}" inputmode="decimal">
+        <input type="hidden" name="revenue_eur" value="{{ company.get('revenue_eur',0)|float }}">
 
         <label>{{ t("field_balance_sheet", lang) }}</label>
-        <input type="number" name="balance_sheet_eur" min="0" step="1000000" value="{{ company.get('balance_sheet_eur',0)|int }}">
+        <input type="text" class="fmt-cur" data-hidden="balance_sheet_eur" value="{{ '{:,.2f}'.format(company.get('balance_sheet_eur',0)|float).replace(',', 'X').replace('.', ',').replace('X', '.') if company.get('balance_sheet_eur',0)|float > 0 else '' }}" inputmode="decimal">
+        <input type="hidden" name="balance_sheet_eur" value="{{ company.get('balance_sheet_eur',0)|float }}">
         <p class="help-text">{{ t("field_balance_help", lang) }}</p>
 
         <label>{{ t("field_legal_form", lang) }}</label>
@@ -142,6 +141,59 @@
 </div>
 
 <script>
+/* --- Zahlenformatierung live bei Eingabe --- */
+
+// Mitarbeiter: "23 000" (Leerzeichen als Tausender)
+function formatInt(input) {
+  const pos = input.selectionStart;
+  const oldLen = input.value.length;
+  let raw = input.value.replace(/\D/g, '');
+  const hidden = document.querySelector('input[type=hidden][name="' + input.dataset.hidden + '"]');
+  hidden.value = raw || '0';
+  if (!raw) { input.value = ''; return; }
+  input.value = parseInt(raw).toLocaleString('de-DE').replace(/\./g, ' ');
+  // Cursor-Position korrigieren
+  const diff = input.value.length - oldLen;
+  input.setSelectionRange(pos + diff, pos + diff);
+}
+
+// Umsatz/Bilanz: "4.320.310,00" (Punkt als Tausender, Komma als Dezimal)
+function formatCur(input) {
+  const pos = input.selectionStart;
+  const oldLen = input.value.length;
+  let val = input.value.replace(/[^\d,]/g, '');
+  let parts = val.split(',');
+  let intPart = parts[0] || '';
+  let decPart = parts.length > 1 ? parts[1].substring(0, 2) : '';
+  const rawVal = intPart + (decPart ? '.' + decPart : '');
+  const hidden = document.querySelector('input[type=hidden][name="' + input.dataset.hidden + '"]');
+  hidden.value = rawVal || '0';
+  if (!intPart) { input.value = decPart ? '0,' + decPart : ''; return; }
+  let formatted = parseInt(intPart).toLocaleString('de-DE');
+  input.value = parts.length > 1 ? formatted + ',' + decPart : formatted;
+  const diff = input.value.length - oldLen;
+  input.setSelectionRange(pos + diff, pos + diff);
+}
+
+// Event-Listener
+document.querySelectorAll('.fmt-int').forEach(el => el.addEventListener('input', () => formatInt(el)));
+document.querySelectorAll('.fmt-cur').forEach(el => el.addEventListener('input', () => formatCur(el)));
+
+// Vor Submit: alle hidden-Felder nochmal synchronisieren
+function syncAllHidden() {
+  document.querySelectorAll('.fmt-int').forEach(el => {
+    const h = document.querySelector('input[type=hidden][name="' + el.dataset.hidden + '"]');
+    h.value = el.value.replace(/\D/g, '') || '0';
+  });
+  document.querySelectorAll('.fmt-cur').forEach(el => {
+    const h = document.querySelector('input[type=hidden][name="' + el.dataset.hidden + '"]');
+    let val = el.value.replace(/[^\d,]/g, '');
+    let parts = val.split(',');
+    h.value = (parts[0] || '0') + (parts.length > 1 ? '.' + parts[1] : '');
+  });
+}
+
+/* --- Standorte --- */
 let siteIdx = {{ (company.get('sites', []) or [{}])|length }};
 function addSiteRow() {
   const c = document.getElementById('sites-container');
