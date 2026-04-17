@@ -1,6 +1,6 @@
 services:
   web:
-    image: ghcr.io/textilundmode/esg-regulierungs-check:latest
+    image: ghcr.io/psychomyc/esg-regulierungs-check:latest
     container_name: esg-regulierungs-check
     ports:
       - "8082:8080"

@@ -24,4 +24,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/textilundmode/esg-regulierungs-check:latest
+          tags: ghcr.io/psychomyc/esg-regulierungs-check:latest
