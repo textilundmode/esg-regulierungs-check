@@ -324,6 +324,8 @@ def _run_analysis_bg(uid: int, profile: dict, lang: str) -> None:
         status.update({"phase": "done", "done": total, "total": total})
 
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         status.update({"phase": "error", "error": str(e)})
 
 
