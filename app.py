@@ -260,40 +260,25 @@ def save_company():
 
 
 # ---------------------------------------------------------------------------
-# Analyse (SSE-Stream)
+# Analyse (Background-Thread + Polling)
 # ---------------------------------------------------------------------------
-@app.route("/run-analysis")
-def run_analysis_page():
-    """Zeigt die Fortschrittsseite und startet SSE-Verbindung."""
-    redir = _require_login()
-    if redir:
-        return redir
-    return render_template("analysis.html")
+# Globaler Status-Speicher pro User (einfach, reicht für Single-VPS)
+_analysis_status: dict[int, dict] = {}
 
 
-@app.route("/api/analysis-stream")
-def analysis_stream():
-    """SSE-Endpoint: streamt Analyse-Fortschritt als Events."""
-    uid = _uid()
-    if not uid:
-        return Response("not authenticated", status=401)
+def _run_analysis_bg(uid: int, profile: dict, lang: str) -> None:
+    """Läuft im Background-Thread. Schreibt Fortschritt in _analysis_status."""
+    status = _analysis_status[uid]
+    try:
+        ph = profile_hash(profile)
+        cached_map = db.get_cache(uid, ph)
+        total = len(REGULATIONS)
+        status.update({"phase": "texts", "done": 0, "total": total, "name": ""})
 
-    lang = _lang()
-    company = db.get_company(uid)
-    if not company or not company.get("employees"):
-        return Response("no company data", status=400)
-
-    profile = {**company, "language": lang}
-    ph = profile_hash(profile)
-    cached_map = db.get_cache(uid, ph)
-    total = len(REGULATIONS)
-
-    def generate():
-        # Phase 1: Volltexte laden
-        yield _sse("phase", {"phase": "texts", "total": total})
+        # Phase 1: Volltexte
         texts: dict[str, str] = {}
         for i, reg in enumerate(REGULATIONS, 1):
-            yield _sse("text_progress", {"i": i, "total": total, "name": reg["name"]})
+            status.update({"done": i, "name": reg["name"]})
             cached = get_cached_text(reg["key"], lang)
             if cached and cached.get("text"):
                 texts[reg["key"]] = cached["text"]
@@ -311,16 +296,12 @@ def analysis_stream():
             else:
                 jobs.append((reg, texts.get(reg["key"], "")))
 
-        yield _sse("phase", {
-            "phase": "analysis",
-            "cached": len(cached_hits),
-            "new": len(jobs),
-            "total": total,
-        })
+        status.update({"phase": "analysis", "done": len(cached_hits), "total": total,
+                        "cached": len(cached_hits), "new": len(jobs), "name": ""})
 
         q = analyze_streaming(profile, jobs, cached_hits)
         results: list[dict] = []
-        done = 0
+        done = len(cached_hits)
         while True:
             item = q.get()
             if item is None:
@@ -334,25 +315,46 @@ def analysis_stream():
                 db.put_cache(uid, ph, item["key"], rh, item)
             results.append(item)
             done += 1
-            yield _sse("result", {"done": done, "total": total, "name": item.get("name", "-")})
+            status.update({"done": done, "name": item.get("name", "-")})
 
         # Speichern
         if any((r.get("applies") or "").lower() != "error" for r in results):
             db.save_analysis(uid, results)
 
-        # Finale Karten-HTML
-        cards = render_cards_html(results, lang)
-        yield _sse("done", {"cards_html": cards})
+        status.update({"phase": "done", "done": total, "total": total})
 
-    return Response(
-        stream_with_context(generate()),
-        mimetype="text/event-stream",
-        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
-    )
+    except Exception as e:
+        status.update({"phase": "error", "error": str(e)})
 
 
-def _sse(event: str, data: dict) -> str:
-    return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
+@app.route("/run-analysis")
+def run_analysis_page():
+    redir = _require_login()
+    if redir:
+        return redir
+
+    uid = _uid()
+    lang = _lang()
+    company = db.get_company(uid)
+    if not company or not company.get("employees"):
+        return redirect(url_for("dashboard"))
+
+    # Analyse im Background-Thread starten
+    profile = {**company, "language": lang}
+    _analysis_status[uid] = {"phase": "starting", "done": 0, "total": len(REGULATIONS), "name": ""}
+    t_thread = threading.Thread(target=_run_analysis_bg, args=(uid, profile, lang), daemon=True)
+    t_thread.start()
+
+    return render_template("analysis.html")
+
+
+@app.route("/api/analysis-status")
+def analysis_status_api():
+    uid = _uid()
+    if not uid:
+        return json.dumps({"phase": "error", "error": "not authenticated"}), 401
+    status = _analysis_status.get(uid, {"phase": "idle"})
+    return Response(json.dumps(status, ensure_ascii=False), mimetype="application/json")
 
 
 # ---------------------------------------------------------------------------
