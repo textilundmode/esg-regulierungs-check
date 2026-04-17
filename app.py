@@ -275,14 +275,10 @@ def _run_analysis_bg(uid: int, profile: dict, lang: str) -> None:
         total = len(REGULATIONS)
         status.update({"phase": "texts", "done": 0, "total": total, "name": ""})
 
-        # Phase 1: Volltexte
+        # Phase 1: Volltexte (immer Aktualität prüfen via ETag/Last-Modified)
         texts: dict[str, str] = {}
         for i, reg in enumerate(REGULATIONS, 1):
             status.update({"done": i, "name": reg["name"]})
-            cached = get_cached_text(reg["key"], lang)
-            if cached and cached.get("text"):
-                texts[reg["key"]] = cached["text"]
-                continue
             res = fetch_law_text(reg, language=lang)
             texts[reg["key"]] = res.get("text") or ""
 
