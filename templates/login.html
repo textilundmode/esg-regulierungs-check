@@ -42,5 +42,11 @@ function switchTab(name) {
   document.getElementById('tab-login').classList.toggle('active', name==='login');
   document.getElementById('tab-signup').classList.toggle('active', name==='signup');
 }
+// Browser-Autofill leeren
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    document.querySelectorAll('input[type="email"], input[type="password"]').forEach(el => { el.value = ''; });
+  }, 100);
+});
 </script>
 {% endblock %}
