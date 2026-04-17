@@ -55,6 +55,22 @@ load_dotenv(override=True)
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET", "esg-dev-secret-change-me")
 
+
+# Reverse-Proxy Subpath: nginx sendet X-Script-Name Header,
+# damit url_for() automatisch /regulierungs-check prefixed.
+class PrefixMiddleware:
+    def __init__(self, wsgi_app):
+        self.wsgi_app = wsgi_app
+
+    def __call__(self, environ, start_response):
+        script_name = environ.get("HTTP_X_SCRIPT_NAME", "")
+        if script_name:
+            environ["SCRIPT_NAME"] = script_name
+        return self.wsgi_app(environ, start_response)
+
+
+app.wsgi_app = PrefixMiddleware(app.wsgi_app)
+
 db.init_db()
 
 
