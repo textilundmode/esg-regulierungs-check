@@ -350,6 +350,16 @@ class LLMClient:
             return resp.content[0].text
 
 
+def _parse_retry_after(err_str: str) -> float:
+    m = re.search(r"retry[-_ ]?after[\"':\s]*([0-9.]+)", err_str, re.I)
+    if m:
+        try:
+            return float(m.group(1))
+        except ValueError:
+            pass
+    return 0.0
+
+
 async def _analyze_one(client: LLMClient, profile_block: str, reg: dict, fulltext: str, language: str) -> dict:
     system = _system_prompt(language)
     fulltext_placeholder = "(full text unavailable)"
