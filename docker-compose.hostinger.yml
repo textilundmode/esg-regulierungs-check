@@ -1,0 +1,23 @@
+services:
+  web:
+    image: ghcr.io/textilundmode/esg-regulierungs-check:latest
+    container_name: esg-regulierungs-check
+    ports:
+      - "8082:8080"
+    environment:
+      - FLASK_SECRET=esg-prod-Ks82nXp4qR7vW
+      - LLM_PROVIDER=openai
+      - OPENAI_BASE_URL=https://openrouter.ai/api/v1
+      - OPENAI_API_KEY=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
+      - OPENAI_MODEL=nvidia/nemotron-3-super-120b-a12b:free
+      - LLM_CONCURRENCY=4
+      - LLM_RPM=18
+      - ANTHROPIC_API_KEY=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
+      - CLAUDE_MODEL=claude-sonnet-4-6
+      - FULLTEXT_MAX_CHARS=40000
+    volumes:
+      - esg-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  esg-data:

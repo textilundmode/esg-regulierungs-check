@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="section">
+  <div class="progress-container" id="progress">
+    <h2 style="color:#1f4e3d;margin-bottom:16px;">{{ t("step1", lang) }}</h2>
+    <div class="progress-bar-outer">
+      <div class="progress-bar-inner" id="bar" style="width:0%"></div>
+    </div>
+    <div class="progress-status" id="status">…</div>
+  </div>
+  <div id="results" style="display:none;"></div>
+</div>
+
+<script>
+const bar = document.getElementById('bar');
+const status = document.getElementById('status');
+const progress = document.getElementById('progress');
+const results = document.getElementById('results');
+
+const es = new EventSource("{{ url_for('analysis_stream') }}");
+
+es.addEventListener('phase', e => {
+  const d = JSON.parse(e.data);
+  if (d.phase === 'analysis') {
+    document.querySelector('#progress h2').textContent = "{{ t('step2', lang) }}";
+    status.textContent = d.cached + '/' + d.total + ' Cache, ' + d.new + ' neu';
+    bar.style.width = '0%';
+  }
+});
+
+es.addEventListener('text_progress', e => {
+  const d = JSON.parse(e.data);
+  bar.style.width = Math.round(d.i / d.total * 100) + '%';
+  status.textContent = d.i + '/' + d.total + ': ' + d.name;
+});
+
+es.addEventListener('result', e => {
+  const d = JSON.parse(e.data);
+  bar.style.width = Math.round(d.done / d.total * 100) + '%';
+  status.textContent = d.done + '/' + d.total + ' — ' + d.name;
+});
+
+es.addEventListener('done', e => {
+  es.close();
+  const d = JSON.parse(e.data);
+  progress.style.display = 'none';
+  results.style.display = 'block';
+  results.innerHTML = d.cards_html
+    + '<div style="margin-top:20px;display:flex;gap:12px;">'
+    + '<a href="{{ url_for("dashboard") }}" class="btn btn-primary">{{ t("btn_run_check", lang)|replace("Jetzt prüfen","Zurück")|replace("Run check","Back")|replace("Verificar ahora","Volver")|replace("Vérifier","Retour")|replace("Verifica ora","Indietro")|replace("立即检查","返回") }}</a>'
+    + '<a href="{{ url_for("fullscreen") }}" target="_blank" class="btn btn-sm" style="background:#e8e8e8;color:#333;">{{ t("btn_open_fullscreen", lang) }}</a>'
+    + '<a href="{{ url_for("download_csv") }}" class="btn btn-sm" style="background:#e8e8e8;color:#333;">📥 CSV</a>'
+    + '</div>';
+});
+
+es.onerror = () => {
+  es.close();
+  status.textContent = '{{ t("err_analysis_start", lang) }}';
+  status.style.color = '#991b1b';
+};
+</script>
+{% endblock %}

@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="sidebar-info">
+  {{ t("active_provider", lang) }}: <strong>{{ provider }}</strong> · {{ t("model", lang) }}: <strong>{{ model }}</strong>
+  · {{ reg_count }} {{ t("regulations_on_file", lang) }}
+</div>
+
+<!-- 1. Unternehmensdaten -->
+<div class="section">
+  <h2>{{ t("section_company_data", lang) }}</h2>
+  <p style="font-size:13px;color:#888;margin-bottom:16px;">{{ t("section_company_hint", lang) }}</p>
+
+  <form method="post" action="{{ url_for('save_company') }}">
+    <div class="grid-2">
+      <div>
+        <label>{{ t("field_name", lang) }}</label>
+        <input type="text" name="name" value="{{ company.get('name','') or '' }}">
+
+        <label>{{ t("field_employees_total", lang) }}</label>
+        <input type="number" name="employees" min="0" step="10" value="{{ company.get('employees',0)|int }}">
+
+        <label>{{ t("field_employees_de", lang) }}</label>
+        <input type="number" name="employees_de" min="0" step="10" value="{{ company.get('employees_de',0)|int }}">
+        <p class="help-text">{{ t("field_employees_de_help", lang) }}</p>
+
+        <label>{{ t("field_revenue", lang) }}</label>
+        <input type="number" name="revenue_eur" min="0" step="1000000" value="{{ company.get('revenue_eur',0)|int }}">
+
+        <label>{{ t("field_balance_sheet", lang) }}</label>
+        <input type="number" name="balance_sheet_eur" min="0" step="1000000" value="{{ company.get('balance_sheet_eur',0)|int }}">
+        <p class="help-text">{{ t("field_balance_help", lang) }}</p>
+
+        <label>{{ t("field_legal_form", lang) }}</label>
+        <select name="legal_form">
+          {% for v in LEGAL_FORMS %}
+          <option value="{{ v }}" {{ 'selected' if company.get('legal_form')==v }}>{{ t_opt(v, LEGAL_FORM_LABELS, lang) }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label>{{ t("field_branch", lang) }}</label>
+        <select name="branch">
+          {% for v in BRANCHES %}
+          <option value="{{ v }}" {{ 'selected' if company.get('branch')==v }}>{{ t_opt(v, BRANCH_LABELS, lang) }}</option>
+          {% endfor %}
+        </select>
+
+        <label>{{ t("field_group_role", lang) }}</label>
+        <select name="group_role">
+          {% for v in GROUP_ROLES %}
+          <option value="{{ v }}" {{ 'selected' if company.get('group_role')==v }}>{{ t_opt(v, GROUP_ROLE_LABELS, lang) }}</option>
+          {% endfor %}
+        </select>
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="b2c" name="b2c" {{ 'checked' if company.get('b2c') }}>
+          <label for="b2c">{{ t("field_b2c", lang) }}</label>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="listed" name="listed" {{ 'checked' if company.get('listed') }}>
+          <label for="listed">{{ t("field_listed", lang) }}</label>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="env_claims" name="env_claims" {{ 'checked' if company.get('env_claims') }}>
+          <label for="env_claims">{{ t("field_env_claims", lang) }}</label>
+        </div>
+        <p class="help-text">{{ t("field_env_claims_help", lang) }}</p>
+      </div>
+    </div>
+
+    <!-- Produktkategorien -->
+    <hr>
+    <h3 style="color:#1f4e3d;margin-bottom:8px;">{{ t("section_products", lang)|replace("#### ","") }}</h3>
+    <p class="help-text" style="margin-bottom:12px;">{{ t("products_hint", lang) }}</p>
+    {% set existing_prods = company.get('product_categories', []) or [] %}
+    <div class="grid-2">
+      {% for v in PRODUCT_CATEGORIES %}
+      <div class="checkbox-row">
+        <input type="checkbox" name="product_categories" value="{{ v }}" id="prod_{{ loop.index }}" {{ 'checked' if v in existing_prods }}>
+        <label for="prod_{{ loop.index }}">{{ t_opt(v, PRODUCT_CAT_LABELS, lang) }}</label>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Standorte -->
+    <hr>
+    <h3 style="color:#1f4e3d;margin-bottom:8px;">{{ t("section_sites", lang)|replace("#### ","") }}</h3>
+    <p class="help-text" style="margin-bottom:12px;">{{ t("sites_hint", lang) }}</p>
+    <div id="sites-container">
+      {% set sites = company.get('sites', []) or [{"type":"Hauptsitz","location":"Deutschland","count":0}] %}
+      {% for s in sites %}
+      <div class="site-row">
+        <div class="site-col">
+          <select name="site_type_{{ loop.index0 }}">
+            {% for v in SITE_TYPES %}
+            <option value="{{ v }}" {{ 'selected' if s.get('type')==v }}>{{ t_opt(v, SITE_TYPE_LABELS, lang) }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="site-col">
+          <select name="site_location_{{ loop.index0 }}">
+            {% for v in LOCATIONS %}
+            <option value="{{ v }}" {{ 'selected' if s.get('location')==v }}>{{ t_opt(v, LOCATION_LABELS, lang) }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="site-count">
+          <input type="number" name="site_count_{{ loop.index0 }}" min="0" value="{{ s.get('count',0)|int }}">
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <button type="button" class="btn btn-sm" style="background:#e8e8e8;color:#333;margin-bottom:16px;" onclick="addSiteRow()">{{ t("site_add", lang) }}</button>
+
+    <hr>
+    <button type="submit" class="btn btn-primary">{{ t("btn_save_master", lang) }}</button>
+  </form>
+</div>
+
+<!-- 2. Regulierungen prüfen -->
+<div class="section">
+  <h2>{{ t("section_check_regulations", lang) }}</h2>
+
+  {% if not company or not company.get('employees') %}
+    <p style="color:#888;">{{ t("info_save_first", lang) }}</p>
+  {% else %}
+    <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
+      <a href="{{ url_for('run_analysis_page') }}" class="btn btn-primary">{{ t("btn_run_check", lang) }}</a>
+      {% if last %}
+      <span style="font-size:13px;color:#888;">{{ t("last_check", lang) }}: {{ last.created_at[:19]|replace('T',' ') }}</span>
+      <a href="{{ url_for('fullscreen') }}" target="_blank" class="btn btn-sm" style="background:#e8e8e8;color:#333;">{{ t("btn_open_fullscreen", lang) }}</a>
+      <a href="{{ url_for('download_csv') }}" class="btn btn-sm" style="background:#e8e8e8;color:#333;">📥 CSV</a>
+      {% endif %}
+    </div>
+
+    {% if cards_html %}
+    <hr>
+    <div id="results">{{ cards_html|safe }}</div>
+    {% endif %}
+  {% endif %}
+</div>
+
+<script>
+let siteIdx = {{ (company.get('sites', []) or [{}])|length }};
+function addSiteRow() {
+  const c = document.getElementById('sites-container');
+  const tpl = c.querySelector('.site-row').cloneNode(true);
+  tpl.querySelectorAll('select, input').forEach(el => {
+    el.name = el.name.replace(/_\d+$/, '_' + siteIdx);
+    if (el.type === 'number') el.value = '0';
+  });
+  c.appendChild(tpl);
+  siteIdx++;
+}
+</script>
+{% endblock %}

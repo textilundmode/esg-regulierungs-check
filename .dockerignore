@@ -1,0 +1,11 @@
+.venv/
+.env
+data/
+__pycache__/
+*.pyc
+.git/
+.github/
+*.md
+.dockerignore
+pages/
+docker-compose.hostinger.yml

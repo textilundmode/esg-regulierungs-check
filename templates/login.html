@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('login')">{{ t("tab_login", lang) }}</button>
+  <button class="tab" onclick="switchTab('signup')">{{ t("tab_signup", lang) }}</button>
+</div>
+
+<!-- Login -->
+<div id="tab-login" class="tab-content active">
+  <div class="section" style="max-width:440px;">
+    <form method="post">
+      <input type="hidden" name="action" value="login">
+      <label>{{ t("email", lang) }}</label>
+      <input type="email" name="email" required>
+      <label>{{ t("password", lang) }}</label>
+      <input type="password" name="password" required>
+      <button type="submit" class="btn btn-primary" style="width:100%;margin-top:6px;">{{ t("btn_login", lang) }}</button>
+    </form>
+  </div>
+</div>
+
+<!-- Signup -->
+<div id="tab-signup" class="tab-content">
+  <div class="section" style="max-width:440px;">
+    <form method="post">
+      <input type="hidden" name="action" value="signup">
+      <label>{{ t("email", lang) }}</label>
+      <input type="email" name="email" required>
+      <label>{{ t("password_min", lang) }}</label>
+      <input type="password" name="password" required minlength="8">
+      <label>{{ t("password_repeat", lang) }}</label>
+      <input type="password" name="password2" required minlength="8">
+      <button type="submit" class="btn btn-primary" style="width:100%;margin-top:6px;">{{ t("btn_signup", lang) }}</button>
+    </form>
+  </div>
+</div>
+
+<script>
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((b,i) => b.classList.toggle('active', i === (name==='login'?0:1)));
+  document.getElementById('tab-login').classList.toggle('active', name==='login');
+  document.getElementById('tab-signup').classList.toggle('active', name==='signup');
+}
+</script>
+{% endblock %}

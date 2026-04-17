@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ t("app_title", lang)|replace("🌱 ","") }}</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f6f8; color: #222; line-height: 1.5; }
+    .container { max-width: 1140px; margin: 0 auto; padding: 16px 24px 60px; }
+
+    /* Disclaimer */
+    .disclaimer { color: #8b0000; font-style: italic; font-size: 13px; margin-bottom: 10px; }
+
+    /* Language picker */
+    .topbar { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .topbar select { padding: 4px 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; }
+
+    /* Header */
+    .app-header {
+      background: linear-gradient(135deg, #0f3a2c 0%, #1f4e3d 35%, #2d8262 75%, #4caf92 100%);
+      padding: 28px 36px; border-radius: 16px; margin-bottom: 28px;
+      box-shadow: 0 8px 26px rgba(15,58,44,0.28);
+      color: white; position: relative; overflow: hidden;
+    }
+    .app-header::after {
+      content: ""; position: absolute; right: -40px; top: -40px;
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+    }
+    .app-header h1 { font-size: 2.4em; font-weight: 800; text-shadow: 1px 2px 5px rgba(0,0,0,0.25); display: flex; align-items: center; gap: 14px; }
+    .app-header .emoji { font-size: 1.25em; display: inline-block; animation: sway 4s ease-in-out infinite; }
+    @keyframes sway { 0%,100%{transform:rotate(-4deg)} 50%{transform:rotate(4deg)} }
+    .app-header .subtitle { color: rgba(255,255,255,0.93); font-size: 1.05em; margin-top: 6px; }
+
+    /* Flash messages */
+    .flash { padding: 10px 16px; border-radius: 8px; margin-bottom: 14px; font-size: 14px; }
+    .flash-error { background: #fde8e8; color: #991b1b; border: 1px solid #f5c6c6; }
+    .flash-success { background: #e8f5e9; color: #1b5e20; border: 1px solid #c8e6c9; }
+
+    /* Forms */
+    label { display: block; font-weight: 600; margin-bottom: 4px; font-size: 14px; color: #333; }
+    input[type="text"], input[type="email"], input[type="password"], input[type="number"], select {
+      width: 100%; padding: 8px 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 15px; margin-bottom: 14px;
+    }
+    input:focus, select:focus { outline: none; border-color: #2d8262; box-shadow: 0 0 0 3px rgba(45,130,98,0.15); }
+    .help-text { font-size: 12px; color: #888; margin-top: -10px; margin-bottom: 14px; }
+
+    .btn { display: inline-block; padding: 10px 24px; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: none; transition: all 0.15s; }
+    .btn-primary { background: #1f4e3d; color: white; }
+    .btn-primary:hover { background: #2d6b55; }
+    .btn-sm { padding: 6px 14px; font-size: 13px; }
+
+    /* Grid */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    /* Section */
+    .section { background: white; padding: 24px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .section h2 { color: #1f4e3d; margin-bottom: 16px; font-size: 1.3em; }
+    hr { border: none; border-top: 1px solid #e8e8e8; margin: 24px 0; }
+
+    /* Checkbox row */
+    .checkbox-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+    .checkbox-row input[type="checkbox"] { width: auto; margin: 0; }
+    .checkbox-row label { margin: 0; font-weight: 500; }
+
+    /* Metrics */
+    .metrics { display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+    .metric { flex: 1; min-width: 140px; padding: 16px; border-radius: 10px; text-align: center; }
+    .metric-yes { background: #e8f5e9; }
+    .metric-maybe { background: #fff8e1; }
+    .metric-no { background: #eceff1; }
+    .metric-value { font-size: 2.2em; font-weight: 800; line-height: 1; }
+    .metric-yes .metric-value { color: #1b5e20; }
+    .metric-maybe .metric-value { color: #8d6e00; }
+    .metric-no .metric-value { color: #455a64; }
+    .metric-label { font-size: 0.85em; color: #666; margin-top: 4px; }
+
+    /* Regulation cards */
+    .reg-card { border: 1px solid #444; border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; background: #2b2b2b; color: #e6e6e6; }
+    .reg-card-header { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+    .badge { padding: 3px 12px; border-radius: 14px; font-size: 0.85em; font-weight: 700; letter-spacing: 0.5px; }
+    .reg-nr { color: #aaa; font-size: 0.85em; }
+    .reg-name { font-weight: 700; font-size: 1.05em; color: #7fc4a8; text-decoration: none; }
+    .reg-name:hover { text-decoration: underline; }
+    .reg-full { color: #bbb; font-size: 0.9em; }
+    .reg-reason { margin-top: 6px; line-height: 1.5; color: #e6e6e6; }
+    .reg-passage { margin-top: 6px; line-height: 1.5; color: #bbb; }
+
+    /* Sidebar info */
+    .sidebar-info { font-size: 13px; color: #888; margin-bottom: 8px; }
+
+    /* Site rows */
+    .site-row { display: flex; gap: 10px; margin-bottom: 8px; align-items: end; }
+    .site-row select, .site-row input { margin-bottom: 0; }
+    .site-row .site-col { flex: 3; }
+    .site-row .site-count { flex: 1; }
+
+    /* Progress */
+    .progress-container { text-align: center; padding: 40px 20px; }
+    .progress-bar-outer { width: 100%; height: 12px; background: #e0e0e0; border-radius: 6px; overflow: hidden; margin: 16px 0; }
+    .progress-bar-inner { height: 100%; background: linear-gradient(90deg, #1f4e3d, #4caf92); border-radius: 6px; transition: width 0.3s; }
+    .progress-status { font-size: 14px; color: #666; }
+
+    /* Tabs */
+    .tabs { display: flex; gap: 0; margin-bottom: 20px; }
+    .tab { padding: 10px 24px; background: #e8e8e8; border: none; cursor: pointer; font-size: 15px; font-weight: 600; color: #666; }
+    .tab:first-child { border-radius: 8px 0 0 8px; }
+    .tab:last-child { border-radius: 0 8px 8px 0; }
+    .tab.active { background: #1f4e3d; color: white; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="disclaimer">⚠ {{ t("disclaimer", lang) }}</div>
+
+    <div class="topbar">
+      <form method="post" action="{{ url_for('set_language') }}" style="display:flex;gap:6px;align-items:center;">
+        <select name="language" onchange="this.form.submit()">
+          {% for code, name in LANGUAGES.items() %}
+          <option value="{{ code }}" {{ 'selected' if code == lang else '' }}>{{ name }}</option>
+          {% endfor %}
+        </select>
+      </form>
+      {% if session.get('user_id') %}
+      <span style="font-size:13px;color:#888;">{{ session.get('user_email','') }}</span>
+      <a href="{{ url_for('logout') }}" class="btn btn-sm" style="background:#e8e8e8;color:#333;">{{ t("btn_logout", lang) }}</a>
+      {% endif %}
+    </div>
+
+    <div class="app-header">
+      <h1><span class="emoji">🌱</span>{{ t("app_title", lang)|replace("🌱 ","") }}</h1>
+      <div class="subtitle">{{ t("app_subtitle", lang) }}</div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for cat, msg in messages %}
+      <div class="flash flash-{{ cat }}">{{ msg }}</div>
+      {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </div>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 style="color:#1f4e3d;">{{ t("fullscreen_title", lang) }}</h2>
+{% if last %}
+<p style="font-size:13px;color:#888;margin-bottom:16px;">{{ t("fullscreen_status", lang) }}: {{ last.created_at[:19]|replace('T',' ') }}</p>
+{{ cards_html|safe }}
+{% else %}
+<p>{{ t("fullscreen_no_result", lang) }}</p>
+{% endif %}
+
+{% endblock %}

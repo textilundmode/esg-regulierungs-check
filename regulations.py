@@ -1,0 +1,421 @@
+"""Kuratierte Liste der 23 ESG-/CSR-Regulierungen mit Anwendbarkeitskriterien.
+
+Die `criteria`-Felder sind bewusst in natürlicher Sprache gehalten, damit
+Claude sie gemeinsam mit dem Unternehmensprofil auswerten kann.
+"""
+
+REGULATIONS = [
+    {
+        "nr": 1,
+        "key": "CSDDD",
+        "name": "CSDDD",
+        "full_name": "Richtlinie (EU) 2024/1760 - Sorgfaltspflichten von Unternehmen im Hinblick auf Nachhaltigkeit",
+        "url": "https://eur-lex.europa.eu/eli/dir/2024/1760/oj",
+        "text_url": "https://eur-lex.europa.eu/eli/dir/2024/1760/oj",
+        "scope": "EU",
+        "criteria": (
+            "Gilt für EU-Unternehmen mit >1000 Beschäftigten UND Nettoumsatz >450 Mio EUR weltweit. "
+            "Für Nicht-EU-Unternehmen: Nettoumsatz >450 Mio EUR in der EU. "
+            "Stufenweise Einführung: ab 2027 (>5000 MA & >1500 Mio EUR), ab 2028 (>3000 MA & >900 Mio EUR), "
+            "ab 2029 (>1000 MA & >450 Mio EUR). Branche: alle."
+        ),
+        "key_article": "Art. 2 (Anwendungsbereich)",
+    },
+    {
+        "nr": 2,
+        "key": "LkSG",
+        "name": "LkSG",
+        "full_name": "Lieferkettensorgfaltspflichtengesetz",
+        "url": "https://www.gesetze-im-internet.de/lksg/",
+        "scope": "DE",
+        "criteria": (
+            "Gilt für Unternehmen mit Hauptverwaltung, Hauptniederlassung, Verwaltungssitz, satzungsmäßigem "
+            "Sitz oder Zweigniederlassung in Deutschland ab 1000 Arbeitnehmern im Inland "
+            "(inkl. entsandte Arbeitnehmer, Leiharbeitnehmer wenn >6 Monate). Branche: alle."
+        ),
+        "key_article": "§ 1 LkSG (Anwendungsbereich)",
+    },
+    {
+        "nr": 3,
+        "key": "EUDR",
+        "name": "EUDR",
+        "full_name": "Verordnung (EU) 2023/1115 über entwaldungsfreie Lieferketten",
+        "url": "https://eur-lex.europa.eu/eli/reg/2023/1115/oj",
+        "text_url": "https://eur-lex.europa.eu/eli/reg/2023/1115/oj",
+        "scope": "EU",
+        "criteria": (
+            "Gilt für alle Marktteilnehmer und Händler, die in der EU bestimmte Rohstoffe "
+            "(Rinder, Kakao, Kaffee, Ölpalme, Kautschuk, Soja, Holz) oder daraus hergestellte Erzeugnisse "
+            "in Verkehr bringen, bereitstellen oder ausführen. KMU-Erleichterungen möglich, aber keine Befreiung. "
+            "Relevanz hängt an Branche/Produktportfolio, nicht an Mitarbeiterzahl."
+        ),
+        "key_article": "Art. 1, 3 (Gegenstand & Verbot)",
+    },
+    {
+        "nr": 4,
+        "key": "FLR",
+        "name": "FLR (Zwangsarbeitsverordnung)",
+        "full_name": "Verordnung (EU) 2024/3015 - Verbot von in Zwangsarbeit hergestellten Produkten",
+        "url": "https://eur-lex.europa.eu/eli/reg/2024/3015/oj",
+        "text_url": "https://eur-lex.europa.eu/eli/reg/2024/3015/oj",
+        "scope": "EU",
+        "criteria": (
+            "Gilt für alle Wirtschaftsakteure, die Produkte in der EU in Verkehr bringen, auf dem Markt "
+            "bereitstellen oder ausführen. Keine MA-Schwelle. Risikobasierter Ansatz; Fokus auf Unternehmen "
+            "mit globalen Lieferketten in Hochrisikoregionen. Branche: alle."
+        ),
+        "key_article": "Art. 1, 3",
+    },
+    {
+        "nr": 5,
+        "key": "CSRD",
+        "name": "CSRD",
+        "full_name": "Richtlinie (EU) 2022/2464 - Nachhaltigkeitsberichterstattung",
+        "url": "https://eur-lex.europa.eu/eli/dir/2022/2464/oj",
+        "text_url": "https://eur-lex.europa.eu/eli/dir/2022/2464/oj",
+        "scope": "EU",
+        "criteria": (
+            "Nach Omnibus I (2026/470) geänderter Anwendungsbereich: Große Unternehmen mit >1000 Beschäftigten "
+            "UND Bilanzsumme >25 Mio EUR ODER Nettoumsatzerlöse >50 Mio EUR. "
+            "Börsennotierte KMU ausgenommen (nur freiwillig). Nicht-EU-Unternehmen mit >450 Mio EUR EU-Umsatz "
+            "ab 2028. Branche: alle."
+        ),
+        "key_article": "Art. 19a, 29a (aktualisiert)",
+    },
+    {
+        "nr": 6,
+        "key": "CSRD_DE",
+        "name": "CSRD-Umsetzungsgesetz (DE)",
+        "full_name": "Gesetz zur Umsetzung der Richtlinie (EU) 2022/2464",
+        "url": "https://dserver.bundestag.de/btd/21/018/2101857.pdf",
+        "scope": "DE",
+        "criteria": (
+            "Deutsche Umsetzung der CSRD; gilt für in Deutschland ansässige große Unternehmen und "
+            "Konzerne gemäß den CSRD-Schwellen (siehe CSRD). Berichtspflicht im Lagebericht (§ 289b HGB-E)."
+        ),
+        "key_article": "§§ 289b-289h HGB-E",
+    },
+    {
+        "nr": 7,
+        "key": "ESRS",
+        "name": "ESRS",
+        "full_name": "Delegierte Verordnung (EU) 2023/2772 - Nachhaltigkeitsberichterstattung (Standards)",
+        "url": "https://eur-lex.europa.eu/eli/reg_del/2023/2772/oj",
+        "text_url": "https://eur-lex.europa.eu/eli/reg_del/2023/2772/oj",
+        "scope": "EU",
+        "criteria": (
+            "Technische Standards für die Nachhaltigkeitsberichterstattung. Gelten für alle Unternehmen, "
+            "die unter die CSRD fallen. Anwendung abhängig von CSRD-Pflicht."
+        ),
+        "key_article": "Annex I (ESRS 1, ESRS 2, E1-E5, S1-S4, G1)",
+    },
+    {
+        "nr": 8,
+        "key": "NFRD",
+        "name": "NFRD",
+        "full_name": "Richtlinie 2014/95/EU - nichtfinanzielle Berichterstattung",
+        "url": "https://eur-lex.europa.eu/eli/dir/2014/95/oj",
+        "text_url": "https://eur-lex.europa.eu/eli/dir/2014/95/oj",
+        "scope": "EU",
+        "criteria": (
+            "Vorläufer der CSRD. Ersetzt für Geschäftsjahre ab 2024 schrittweise durch CSRD. "
+            "Historisch: große Unternehmen von öffentlichem Interesse mit >500 MA. "
+            "Für aktuelle Prüfung i.d.R. nicht mehr relevant."
+        ),
+        "key_article": "Art. 19a",
+    },
+    {
+        "nr": 9,
+        "key": "CSR-RUG",
+        "name": "CSR-RUG",
+        "full_name": "Gesetz zur Stärkung der nichtfinanziellen Berichterstattung",
+        "url": "https://www.bgbl.de/",
+        "scope": "DE",
+        "criteria": (
+            "Deutsche Umsetzung der NFRD (§§ 289b ff. HGB alte Fassung). "
+            "Große kapitalmarktorientierte Unternehmen >500 MA. "
+            "Wird durch CSRD-Umsetzung abgelöst."
+        ),
+        "key_article": "§§ 289b-289e HGB a.F.",
+    },
+    {
+        "nr": 10,
+        "key": "TaxonomieVO",
+        "name": "Taxonomie-Verordnung",
+        "full_name": "Verordnung (EU) 2020/852 - Rahmen für nachhaltige Investitionen",
+        "url": "https://eur-lex.europa.eu/eli/reg/2020/852/oj",
+        "text_url": "https://eur-lex.europa.eu/eli/reg/2020/852/oj",
+        "scope": "EU",
+        "criteria": (
+            "Gilt für Unternehmen, die unter die NFRD/CSRD fallen, sowie für Finanzmarktteilnehmer. "
+            "Offenlegung der Taxonomie-Konformität (Umsatz-, CapEx-, OpEx-Anteile). "
+            "Relevanz gekoppelt an CSRD-Pflicht."
+        ),
+        "key_article": "Art. 8",
+    },
+    {
+        "nr": 11,
+        "key": "SFDR",
+        "name": "SFDR",
+        "full_name": "Verordnung (EU) 2019/2088 - nachhaltigkeitsbezogene Offenlegungspflichten",
+        "url": "https://eur-lex.europa.eu/eli/reg/2019/2088/oj",
+        "text_url": "https://eur-lex.europa.eu/eli/reg/2019/2088/oj",
+        "scope": "EU",
+        "criteria": (
+            "Gilt ausschließlich für Finanzmarktteilnehmer (Vermögensverwalter, Versicherer, AIFM, UCITS) "
+            "und Finanzberater. Nicht für Realwirtschaft. "
+            "Anwendbar wenn Branche = Finanzdienstleistungen/Versicherungen."
+        ),
+        "key_article": "Art. 2, 3",
+    },
+    {
+        "nr": 12,
+        "key": "ESGRatingVO",
+        "name": "ESG Rating VO",
+        "full_name": "Verordnung (EU) 2024/3005 - ESG-Ratings",
+        "url": "https://eur-lex.europa.eu/eli/reg/2024/3005/oj",
+        "text_url": "https://eur-lex.europa.eu/eli/reg/2024/3005/oj",
+        "scope": "EU",
+        "criteria": (
+            "Gilt für Anbieter von ESG-Ratings mit Tätigkeit in der EU. "
+            "Nicht für bewertete Unternehmen selbst. Relevant nur bei Branche = ESG-Rating-Anbieter."
+        ),
+        "key_article": "Art. 2",
+    },
+    {
+        "nr": 13,
+        "key": "WhistleblowerRL",
+        "name": "Whistleblower-Richtlinie",
+        "full_name": "Richtlinie (EU) 2019/1937 - Schutz von Hinweisgebern",
+        "url": "https://eur-lex.europa.eu/eli/dir/2019/1937/oj",
+        "text_url": "https://eur-lex.europa.eu/eli/dir/2019/1937/oj",
+        "scope": "EU",
+        "criteria": (
+            "Richtet sich an Mitgliedstaaten. In DE umgesetzt durch HinSchG. "
+            "Direkte Anwendung für Unternehmen über HinSchG."
+        ),
+        "key_article": "Art. 8",
+    },
+    {
+        "nr": 14,
+        "key": "HinSchG",
+        "name": "HinSchG",
+        "full_name": "Hinweisgeberschutzgesetz",
+        "url": "https://www.gesetze-im-internet.de/hinschg/",
+        "scope": "DE",
+        "criteria": (
+            "Gilt für Beschäftigungsgeber in Deutschland ab 50 Beschäftigten. "
+            "Pflicht zur Einrichtung interner Meldestellen. Branche: alle."
+        ),
+        "key_article": "§ 12 HinSchG",
+    },
+    {
+        "nr": 15,
+        "key": "RightToRepair",
+        "name": "Right to Repair",
+        "full_name": "Richtlinie (EU) 2024/1799 - Reparatur von Waren",
+        "url": "https://eur-lex.europa.eu/eli/dir/2024/1799/oj",
+        "text_url": "https://eur-lex.europa.eu/eli/dir/2024/1799/oj",
+        "scope": "EU",
+        "criteria": (
+            "Gilt für Hersteller bestimmter Warenkategorien (z.B. Haushaltsgeräte, Smartphones, Tablets) "
+            "die in der EU in Verkehr gebracht werden. Branche relevant: Konsumgüterhersteller, Elektronik. "
+            "Keine MA-Schwelle."
+        ),
+        "key_article": "Art. 2, 5",
+    },
+    {
+        "nr": 16,
+        "key": "Oekodesign",
+        "name": "Ökodesign-VO",
+        "full_name": "Verordnung (EU) 2024/1781 - nachhaltige Produkte (ESPR)",
+        "url": "https://eur-lex.europa.eu/eli/reg/2024/1781/oj",
+        "text_url": "https://eur-lex.europa.eu/eli/reg/2024/1781/oj",
+        "scope": "EU",
+        "criteria": (
+            "Gilt für Hersteller, Importeure, Händler von physischen Produkten (mit Ausnahmen wie Lebensmittel) "
+            "die in der EU in Verkehr gebracht werden. Branche: nahezu alle warenproduzierenden. "
+            "Keine MA-Schwelle."
+        ),
+        "key_article": "Art. 1, 2",
+    },
+    {
+        "nr": 17,
+        "key": "PPWR",
+        "name": "PPWR",
+        "full_name": "Verordnung (EU) 2025/40 - Verpackungen und Verpackungsabfälle",
+        "url": "https://eur-lex.europa.eu/eli/reg/2025/40/oj",
+        "text_url": "https://eur-lex.europa.eu/eli/reg/2025/40/oj",
+        "scope": "EU",
+        "criteria": (
+            "Gilt für Hersteller, Importeure, Händler, Fulfilment-Dienstleister und Endvertreiber von "
+            "Verpackungen in der EU. Branche relevant: alle Unternehmen mit physischen Produkten/Verpackungen. "
+            "Keine MA-Schwelle."
+        ),
+        "key_article": "Art. 1, 3",
+    },
+    {
+        "nr": 18,
+        "key": "KonfliktminVO",
+        "name": "Konfliktmineralien-VO",
+        "full_name": "Verordnung (EU) 2017/821 - Konfliktmineralien",
+        "url": "https://eur-lex.europa.eu/eli/reg/2017/821/oj",
+        "text_url": "https://eur-lex.europa.eu/eli/reg/2017/821/oj",
+        "scope": "EU",
+        "criteria": (
+            "Gilt für Unionseinführer von Zinn, Tantal, Wolfram, deren Erzen und Gold. "
+            "Volumenschwellen pro Mineral in Anhang I. Branche relevant: Metallimporteure, Elektronik, "
+            "Schmuck, Automobil mit Direktimport."
+        ),
+        "key_article": "Art. 1, Anhang I",
+    },
+    {
+        "nr": 19,
+        "key": "MinRohSorgG",
+        "name": "MinRohSorgG",
+        "full_name": "Mineralische-Rohstoffe-Sorgfaltspflichtengesetz",
+        "url": "https://www.gesetze-im-internet.de/minrohsorgg/",
+        "scope": "DE",
+        "criteria": (
+            "Deutsche Durchführung der Konfliktmineralien-VO. Gilt für Unionseinführer mit Sitz in DE "
+            "oberhalb der Volumenschwellen aus Anhang I der VO (EU) 2017/821."
+        ),
+        "key_article": "§ 3 MinRohSorgG",
+    },
+    {
+        "nr": 20,
+        "key": "UmweltstrafRL",
+        "name": "EU Umweltstrafrechts-RL",
+        "full_name": "Richtlinie (EU) 2024/1203 - strafrechtlicher Schutz der Umwelt",
+        "url": "https://eur-lex.europa.eu/eli/dir/2024/1203/oj",
+        "text_url": "https://eur-lex.europa.eu/eli/dir/2024/1203/oj",
+        "scope": "EU",
+        "criteria": (
+            "Richtet sich primär an Mitgliedstaaten (Umsetzung ins nationale Strafrecht). "
+            "Unternehmen sind indirekt betroffen: juristische Personen haftbar für definierte Umweltstraftaten. "
+            "Alle Branchen, insbes. Industrie/Chemie/Abfall."
+        ),
+        "key_article": "Art. 3, 7",
+    },
+    {
+        "nr": 21,
+        "key": "EmpCo",
+        "name": "EmpCo",
+        "full_name": "Richtlinie (EU) 2024/825 - Stärkung der Verbraucher für den ökologischen Wandel",
+        "url": "https://eur-lex.europa.eu/eli/dir/2024/825/oj",
+        "text_url": "https://eur-lex.europa.eu/eli/dir/2024/825/oj",
+        "scope": "EU",
+        "criteria": (
+            "Gilt für alle Unternehmen, die Verbrauchern gegenüber Umweltaussagen machen oder Nachhaltigkeits"
+            "siegel verwenden (B2C). Keine MA-Schwelle. Branchenrelevanz: alle B2C-Unternehmen."
+        ),
+        "key_article": "Art. 1",
+    },
+    {
+        "nr": 22,
+        "key": "GreenClaims",
+        "name": "Green Claims Directive (Entwurf)",
+        "full_name": "Vorschlag Richtlinie - Begründung/Kommunikation ausdrücklicher Umweltaussagen",
+        "url": "https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX:52023PC0166",
+        "text_url": "https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX:52023PC0166",
+        "scope": "EU",
+        "criteria": (
+            "Entwurf (noch nicht in Kraft). Gilt nach Verabschiedung für B2C-Unternehmen mit ausdrücklichen "
+            "Umweltaussagen. Kleinstunternehmen (<10 MA & Umsatz <2 Mio EUR) ausgenommen."
+        ),
+        "key_article": "Art. 1, 3",
+    },
+    {
+        "nr": 23,
+        "key": "OmnibusI",
+        "name": "Omnibus I-Richtlinie",
+        "full_name": "Richtlinie (EU) 2026/470 - Änderung CSRD/CSDDD (Omnibus I)",
+        "url": "https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX:32026L0470",
+        "text_url": "https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX:32026L0470",
+        "scope": "EU",
+        "criteria": (
+            "Ändert CSRD und CSDDD: erhöhte Schwellen, verschobene Fristen, reduzierte Berichtspflichten. "
+            "Keine eigenständige Berichtspflicht, sondern Modifikationsnorm. "
+            "Relevant sobald CSRD oder CSDDD einschlägig ist."
+        ),
+        "key_article": "Art. 1, 2",
+    },
+]
+
+# Branchen: sprachneutrale Keys (= DE-String mit Umlauten) für DB-Persistenz.
+# Übersetzungen: siehe i18n.BRANCH_LABELS
+BRANCHES = [
+    "Land-/Forstwirtschaft, Fischerei",
+    "Bergbau / Gewinnung von Steinen und Erden",
+    "Verarbeitendes Gewerbe / Industrie",
+    "Chemie / Pharma",
+    "Metallverarbeitung / Maschinenbau",
+    "Automobil / Fahrzeugbau",
+    "Elektronik / Elektrotechnik",
+    "Textil / Bekleidung / Leder",
+    "Lebensmittel / Getränke",
+    "Möbel / Holz / Papier",
+    "Energieversorgung",
+    "Wasser- / Abfallwirtschaft",
+    "Bauwirtschaft",
+    "Handel (Groß-/Einzelhandel)",
+    "Verkehr / Logistik",
+    "Gastgewerbe / Tourismus",
+    "Information / Telekommunikation / IT",
+    "Finanzdienstleistungen",
+    "Versicherungen",
+    "Immobilien",
+    "Beratung / Recht / Wirtschaftsprüfung",
+    "Forschung / Entwicklung",
+    "Bildung",
+    "Gesundheit / Soziales",
+    "Kunst / Unterhaltung / Medien",
+    "Sonstige Dienstleistungen",
+]
+
+SITE_TYPES = [
+    "Hauptsitz",
+    "Produktionsstätte",
+    "Vertriebsbüro",
+    "Lager / Logistikzentrum",
+    "Forschung / Entwicklung",
+    "Filiale / Niederlassung",
+]
+
+LOCATIONS = ["Deutschland", "EU (ohne Deutschland)", "Weltweit (außerhalb EU)"]
+
+LEGAL_FORMS = [
+    "AG / SE",
+    "GmbH",
+    "GmbH & Co. KG",
+    "KG / OHG",
+    "Einzelunternehmen",
+    "Genossenschaft",
+    "Stiftung / Verein",
+    "Limited / Ltd.",
+    "Sonstige",
+]
+
+GROUP_ROLES = [
+    "Eigenständig (kein Konzern)",
+    "Mutterunternehmen mit Sitz in EU",
+    "Mutterunternehmen mit Sitz außerhalb EU",
+    "Tochter, EU-Muttergesellschaft",
+    "Tochter, Nicht-EU-Muttergesellschaft",
+]
+
+PRODUCT_CATEGORIES = [
+    "Verpackungen (eigene oder vertriebene)",
+    "Elektronik / Haushaltsgeräte / IT-Hardware",
+    "Holz / Holzprodukte / Papier",
+    "Kaffee / Kakao",
+    "Palmöl / Soja",
+    "Kautschuk / Gummi",
+    "Rinder / Rindsprodukte / Leder",
+    "Zinn / Tantal / Wolfram / Gold (Direktimport)",
+    "Chemische Stoffe",
+    "Textilien / Bekleidung / Leder",
+    "Möbel / Baustoffe",
+    "Lebensmittel / Getränke",
+    "Keine physischen Produkte (nur Dienstleistung/Software)",
+]
