@@ -286,6 +286,13 @@ class LLMClient:
             self.client = AsyncOpenAI(api_key=key, base_url=base_url)
             self.model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
             self.extra = {}
+        elif self.provider == "google":
+            import httpx as _httpx
+            self.model = os.getenv("GOOGLE_MODEL") or os.getenv("OPENAI_MODEL", "gemini-2.5-flash")
+            self.api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("OPENAI_API_KEY")
+            if not self.api_key:
+                raise RuntimeError("GOOGLE_API_KEY fehlt.")
+            self.base_url = "https://generativelanguage.googleapis.com/v1beta"
         elif self.provider == "anthropic":
             from anthropic import AsyncAnthropic
             key = os.getenv("ANTHROPIC_API_KEY")
@@ -311,13 +318,28 @@ class LLMClient:
             try:
                 resp = await self.client.chat.completions.create(**kwargs)
             except Exception as e:  # noqa: BLE001
-                # Manche Provider/Modelle akzeptieren response_format nicht -> ohne nochmal
                 if json_mode and ("response_format" in str(e) or "json_object" in str(e)):
                     kwargs.pop("response_format", None)
                     resp = await self.client.chat.completions.create(**kwargs)
                 else:
                     raise
             return resp.choices[0].message.content or ""
+        elif self.provider == "google":
+            import httpx as _httpx
+            url = f"{self.base_url}/models/{self.model}:generateContent?key={self.api_key}"
+            body = {
+                "systemInstruction": {"parts": [{"text": system}]},
+                "contents": [{"role": "user", "parts": [{"text": user}]}],
+                "generationConfig": {
+                    "temperature": 0.0,
+                    "maxOutputTokens": max_tokens,
+                    "responseMimeType": "application/json" if json_mode else "text/plain",
+                },
+            }
+            async with _httpx.AsyncClient(timeout=90) as client:
+                resp = await client.post(url, json=body)
+                resp.raise_for_status()
+                return resp.json()["candidates"][0]["content"]["parts"][0]["text"]
         else:  # anthropic
             resp = await self.client.messages.create(
                 model=self.model,
