@@ -285,7 +285,10 @@ class LLMClient:
             if not key:
                 raise RuntimeError("OPENAI_API_KEY fehlt.")
             base_url = os.getenv("OPENAI_BASE_URL") or None
-            self.client = AsyncOpenAI(api_key=key, base_url=base_url)
+            # Explizites Timeout (Sek.) — sonst haengt der Default (10 Minuten)
+            # die Analyse, wenn ein einzelner Call am Provider haengenbleibt.
+            llm_timeout = float(os.getenv("LLM_REQUEST_TIMEOUT", "60"))
+            self.client = AsyncOpenAI(api_key=key, base_url=base_url, timeout=llm_timeout)
             self.model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
             self.extra = {}
         elif self.provider == "google":
@@ -375,19 +378,25 @@ async def _analyze_one(client: LLMClient, profile_block: str, reg: dict, fulltex
         fulltext=fulltext[:int(os.getenv("FULLTEXT_MAX_CHARS", "40000"))] if fulltext else fulltext_placeholder,
     )
     last_error: str | None = None
+    key = reg.get("key", "?")
+    print(f"[llm] start {key}", flush=True)
     for attempt in range(6):  # mehr Versuche (war 4)
         try:
             text = await client.ask(system, user_msg, max_tokens=1500)
             parsed = _extract_json(text)
+            print(f"[llm] ok    {key}", flush=True)
             return _enrich(reg, parsed)
         except (json.JSONDecodeError, ValueError) as e:
             last_error = f"JSON-Parse: {e}"
+            print(f"[llm] retry {key} attempt={attempt} json-parse: {e}", flush=True)
             await asyncio.sleep(0.6)
         except Exception as e:  # noqa: BLE001
             last_error = str(e)
             err_low = last_error.lower()
             is_rate_limit = ("429" in last_error or "rate_limit" in err_low
                              or "resource_exhausted" in err_low or "quota" in err_low)
+            print(f"[llm] retry {key} attempt={attempt} ratelimit={is_rate_limit}: {last_error[:160]}",
+                  flush=True)
             if is_rate_limit:
                 # Google sendet "retry in Xs" - parsen, sonst 60s default
                 import re as _re
@@ -396,6 +405,7 @@ async def _analyze_one(client: LLMClient, profile_block: str, reg: dict, fulltex
                 await asyncio.sleep(min(wait + 2, 90))
             else:
                 await asyncio.sleep(1.5 * (attempt + 1))
+    print(f"[llm] fail  {key}: {last_error}", flush=True)
     return {**_enrich(reg, {}), "applies": "error", "reason": last_error or "unbekannter Fehler", "passage": "-"}
 
 
