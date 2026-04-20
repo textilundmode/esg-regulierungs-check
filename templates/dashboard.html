@@ -73,7 +73,7 @@
     <h3 style="color:#1f4e3d;margin-bottom:8px;">{{ t("section_products", lang)|replace("#### ","") }}</h3>
     <p class="help-text" style="margin-bottom:12px;">{{ t("products_hint", lang) }}</p>
     {% set existing_prods = company.get('product_categories', []) or [] %}
-    <div class="grid-2">
+    <div class="grid-2 products-grid">
       {% for v in PRODUCT_CATEGORIES %}
       <div class="checkbox-row">
         <input type="checkbox" name="product_categories" value="{{ v }}" id="prod_{{ loop.index }}" {{ 'checked' if v in existing_prods }}>
