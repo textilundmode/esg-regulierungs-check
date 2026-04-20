@@ -38,7 +38,6 @@
                 {% for g in row.guidelines %}
                 <li>
                   <a href="{{ g.url }}" target="_blank" rel="noopener">{{ g.name }}</a>
-                  <span class="guide-stand">· {{ t("stand_label", lang) }}: {{ g.stand }}</span>
                 </li>
                 {% endfor %}
               </ul>

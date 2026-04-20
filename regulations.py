@@ -457,6 +457,45 @@ def guidelines_for(reg_key: str) -> list[dict]:
     return GUIDELINES_BY_REG_KEY.get(reg_key, [])
 
 
+# ---------------------------------------------------------------------------
+# Veroeffentlichungsdatum je Regulierung (statisch gepflegt).
+#
+# Fuer EU-Verordnungen/Richtlinien das Datum der Veroeffentlichung im
+# Amtsblatt (OJ). Fuer deutsche Gesetze das Datum der Bundesgesetzblatt-
+# Veroeffentlichung. Format: DD.MM.YYYY.
+# ---------------------------------------------------------------------------
+PUBLISHED_BY_REG_KEY: dict[str, str] = {
+    "CSDDD":           "05.07.2024",
+    "LkSG":            "16.07.2021",
+    "EUDR":            "09.06.2023",
+    "FLR":             "12.12.2024",
+    "CSRD":            "16.12.2022",
+    "CSRD_DE":         "Entwurf 2025",
+    "ESRS":            "22.12.2023",
+    "NFRD":            "15.11.2014",
+    "CSR-RUG":         "11.04.2017",
+    "TaxonomieVO":     "22.06.2020",
+    "SFDR":            "09.12.2019",
+    "ESGRatingVO":     "12.12.2024",
+    "WhistleblowerRL": "26.11.2019",
+    "HinSchG":         "02.06.2023",
+    "RightToRepair":   "10.07.2024",
+    "Oekodesign":      "28.06.2024",
+    "PPWR":            "22.01.2025",
+    "KonfliktminVO":   "19.05.2017",
+    "MinRohSorgG":     "18.12.2020",
+    "UmweltstrafRL":   "30.04.2024",
+    "EmpCo":           "06.03.2024",
+    "GreenClaims":     "Entwurf 22.03.2023",
+    "OmnibusI":        "2026",
+}
+
+
+def published_for(reg_key: str) -> str:
+    """Veroeffentlichungsdatum (oder leerer Platzhalter)."""
+    return PUBLISHED_BY_REG_KEY.get(reg_key, "—")
+
+
 # Branchen: sprachneutrale Keys (= DE-String mit Umlauten) für DB-Persistenz.
 # Übersetzungen: siehe i18n.BRANCH_LABELS
 BRANCHES = [
