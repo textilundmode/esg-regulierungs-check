@@ -11,6 +11,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app.py db.py llm.py views.py fetcher.py regulations.py i18n.py ./
 COPY templates/ templates/
+COPY static/ static/
 
 RUN mkdir -p /app/data && chmod 777 /app/data
 

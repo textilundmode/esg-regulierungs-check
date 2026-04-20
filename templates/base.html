@@ -12,9 +12,16 @@
     /* Disclaimer */
     .disclaimer { color: #8b0000; font-style: italic; font-size: 13px; margin-bottom: 10px; }
 
-    /* Language picker */
-    .topbar { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-bottom: 4px; }
+    /* Top bar: brand left, language picker right */
+    .topbar { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .topbar-right { display: flex; align-items: center; gap: 8px; }
     .topbar select { padding: 4px 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; }
+
+    /* Brand (textil+mode) */
+    .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: #0f3851; }
+    .brand img { height: 36px; width: 36px; display: block; }
+    .brand-name { font-weight: 700; font-size: 18px; letter-spacing: 0.2px; }
+    .brand-name span { color: #75b84e; }
 
     /* Header */
     .app-header {
@@ -114,6 +121,9 @@
     .tab.active { background: #1f4e3d; color: white; }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
+
+    /* Footer */
+    .app-footer { text-align: center; font-size: 12px; color: #888; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e8e8e8; }
   </style>
 </head>
 <body>
@@ -121,17 +131,23 @@
     <div class="disclaimer">⚠ {{ t("disclaimer", lang) }}</div>
 
     <div class="topbar">
-      <form method="post" action="{{ url_for('set_language') }}" style="display:flex;gap:6px;align-items:center;">
-        <select name="language" onchange="this.form.submit()">
-          {% for code, name in LANGUAGES.items() %}
-          <option value="{{ code }}" {{ 'selected' if code == lang else '' }}>{{ name }}</option>
-          {% endfor %}
-        </select>
-      </form>
-      {% if session.get('user_id') %}
-      <span style="font-size:13px;color:#888;">{{ session.get('user_email','') }}</span>
-      <a href="{{ url_for('logout') }}" class="btn btn-sm" style="background:#e8e8e8;color:#333;">{{ t("btn_logout", lang) }}</a>
-      {% endif %}
+      <a class="brand" href="https://www.textil-mode.de" target="_blank" rel="noopener">
+        <img src="{{ url_for('static', filename='images/tum-logo.svg') }}" alt="textil+mode Logo">
+        <span class="brand-name">textil<span>+</span>mode</span>
+      </a>
+      <div class="topbar-right">
+        <form method="post" action="{{ url_for('set_language') }}" style="display:flex;gap:6px;align-items:center;">
+          <select name="language" onchange="this.form.submit()">
+            {% for code, name in LANGUAGES.items() %}
+            <option value="{{ code }}" {{ 'selected' if code == lang else '' }}>{{ name }}</option>
+            {% endfor %}
+          </select>
+        </form>
+        {% if session.get('user_id') %}
+        <span style="font-size:13px;color:#888;">{{ session.get('user_email','') }}</span>
+        <a href="{{ url_for('logout') }}" class="btn btn-sm" style="background:#e8e8e8;color:#333;">{{ t("btn_logout", lang) }}</a>
+        {% endif %}
+      </div>
     </div>
 
     <div class="app-header">
@@ -148,6 +164,8 @@
     {% endwith %}
 
     {% block content %}{% endblock %}
+
+    <div class="app-footer">{{ t("created_by", lang) }}</div>
   </div>
 </body>
 </html>
