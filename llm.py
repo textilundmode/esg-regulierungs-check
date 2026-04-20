@@ -373,20 +373,25 @@ async def _analyze_one(client: LLMClient, profile_block: str, reg: dict, fulltex
         fulltext=fulltext[:int(os.getenv("FULLTEXT_MAX_CHARS", "40000"))] if fulltext else fulltext_placeholder,
     )
     last_error: str | None = None
-    for attempt in range(4):
+    for attempt in range(6):  # mehr Versuche (war 4)
         try:
             text = await client.ask(system, user_msg, max_tokens=1500)
             parsed = _extract_json(text)
             return _enrich(reg, parsed)
         except (json.JSONDecodeError, ValueError) as e:
-            # Modell hat Müll statt JSON geliefert -> kurz warten + nochmal
             last_error = f"JSON-Parse: {e}"
             await asyncio.sleep(0.6)
         except Exception as e:  # noqa: BLE001
             last_error = str(e)
-            if "429" in last_error or "rate_limit" in last_error.lower():
-                wait = _parse_retry_after(last_error) or 60.0
-                await asyncio.sleep(min(wait + 1, 75))
+            err_low = last_error.lower()
+            is_rate_limit = ("429" in last_error or "rate_limit" in err_low
+                             or "resource_exhausted" in err_low or "quota" in err_low)
+            if is_rate_limit:
+                # Google sendet "retry in Xs" - parsen, sonst 60s default
+                import re as _re
+                m = _re.search(r"retry in ([\d.]+)s", last_error, _re.I)
+                wait = float(m.group(1)) if m else (_parse_retry_after(last_error) or 60.0)
+                await asyncio.sleep(min(wait + 2, 90))
             else:
                 await asyncio.sleep(1.5 * (attempt + 1))
     return {**_enrich(reg, {}), "applies": "error", "reason": last_error or "unbekannter Fehler", "passage": "-"}

@@ -297,12 +297,13 @@ def _run_analysis_bg(uid: int, profile: dict, lang: str) -> None:
 
         q = analyze_streaming(profile, jobs, cached_hits)
         results: list[dict] = []
-        done = len(cached_hits)
+        done = 0
         while True:
             item = q.get()
             if item is None:
                 break
-            if not item.pop("_from_cache", False) and item.get("applies") != "error":
+            is_cached = item.pop("_from_cache", False)
+            if not is_cached and item.get("applies") != "error":
                 rh = ""
                 for reg in REGULATIONS:
                     if reg["key"] == item["key"]:
