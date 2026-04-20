@@ -8,14 +8,14 @@ import csv
 import io
 from html import escape
 
-APPLIES_ORDER = {"ja": 0, "moeglich": 1, "nein": 2}
+APPLIES_ORDER = {"error": 0, "ja": 1, "moeglich": 2, "nein": 3}
 
 I18N = {
     "de": {
         "metric_yes": "Greift",
         "metric_maybe": "Möglich / zu prüfen",
         "metric_no": "Nicht einschlägig",
-        "applies_label": {"ja": "GREIFT", "moeglich": "MÖGLICH", "nein": "NICHT EINSCHLÄGIG"},
+        "applies_label": {"ja": "GREIFT", "moeglich": "MÖGLICH", "nein": "NICHT EINSCHLÄGIG", "error": "FEHLER"},
         "reason": "Begründung",
         "reason_missing": "Keine Begründung verfügbar.",
         "passage": "Greifende Stelle",
@@ -24,7 +24,7 @@ I18N = {
         "metric_yes": "Applies",
         "metric_maybe": "Possible / to verify",
         "metric_no": "Not applicable",
-        "applies_label": {"ja": "APPLIES", "moeglich": "POSSIBLE", "nein": "NOT APPLICABLE"},
+        "applies_label": {"ja": "APPLIES", "moeglich": "POSSIBLE", "nein": "NOT APPLICABLE", "error": "ERROR"},
         "reason": "Reason",
         "reason_missing": "No justification available.",
         "passage": "Triggering passage",
@@ -33,7 +33,7 @@ I18N = {
         "metric_yes": "Aplica",
         "metric_maybe": "Posible / a verificar",
         "metric_no": "No aplicable",
-        "applies_label": {"ja": "APLICA", "moeglich": "POSIBLE", "nein": "NO APLICABLE"},
+        "applies_label": {"ja": "APLICA", "moeglich": "POSIBLE", "nein": "NO APLICABLE", "error": "ERROR"},
         "reason": "Justificación",
         "reason_missing": "Sin justificación disponible.",
         "passage": "Pasaje relevante",
@@ -42,7 +42,7 @@ I18N = {
         "metric_yes": "S'applique",
         "metric_maybe": "Possible / à vérifier",
         "metric_no": "Non applicable",
-        "applies_label": {"ja": "S'APPLIQUE", "moeglich": "POSSIBLE", "nein": "NON APPLICABLE"},
+        "applies_label": {"ja": "S'APPLIQUE", "moeglich": "POSSIBLE", "nein": "NON APPLICABLE", "error": "ERREUR"},
         "reason": "Justification",
         "reason_missing": "Aucune justification disponible.",
         "passage": "Passage pertinent",
@@ -51,7 +51,7 @@ I18N = {
         "metric_yes": "Si applica",
         "metric_maybe": "Possibile / da verificare",
         "metric_no": "Non applicabile",
-        "applies_label": {"ja": "SI APPLICA", "moeglich": "POSSIBILE", "nein": "NON APPLICABILE"},
+        "applies_label": {"ja": "SI APPLICA", "moeglich": "POSSIBILE", "nein": "NON APPLICABILE", "error": "ERRORE"},
         "reason": "Motivazione",
         "reason_missing": "Nessuna motivazione disponibile.",
         "passage": "Passaggio rilevante",
@@ -60,7 +60,7 @@ I18N = {
         "metric_yes": "适用",
         "metric_maybe": "可能 / 需核实",
         "metric_no": "不适用",
-        "applies_label": {"ja": "适用", "moeglich": "可能", "nein": "不适用"},
+        "applies_label": {"ja": "适用", "moeglich": "可能", "nein": "不适用", "error": "错误"},
         "reason": "理由",
         "reason_missing": "暂无理由说明。",
         "passage": "相关条款",
@@ -71,6 +71,7 @@ BADGE_STYLES = {
     "ja": ("background:#1f4e3d;color:white;", "✓"),
     "moeglich": ("background:#d4a017;color:white;", "?"),
     "nein": ("background:#6b6b6b;color:white;", "—"),
+    "error": ("background:#991b1b;color:white;", "✕"),
 }
 
 
