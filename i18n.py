@@ -53,6 +53,14 @@ UI: dict[str, dict[str, str]] = {
         "it": "Tutte le informazioni sono fornite senza garanzia.",
         "zh": "所有信息均不作担保。",
     },
+    "created_by": {
+        "de": "© 2026 · Alle Rechte vorbehalten",
+        "en": "© 2026 · All rights reserved",
+        "es": "© 2026 · Todos los derechos reservados",
+        "fr": "© 2026 · Tous droits réservés",
+        "it": "© 2026 · Tutti i diritti riservati",
+        "zh": "© 2026 · 版权所有",
+    },
 
     # Auth
     "tab_login": {"de": "Anmelden", "en": "Sign in", "es": "Iniciar sesión", "fr": "Connexion", "it": "Accedi", "zh": "登录"},
@@ -201,6 +209,15 @@ UI: dict[str, dict[str, str]] = {
         "zh": "请先保存基本数据。",
     },
     "btn_run_check": {"de": "Jetzt prüfen", "en": "Run check", "es": "Verificar ahora", "fr": "Vérifier", "it": "Verifica ora", "zh": "立即检查"},
+    "btn_regulations_list": {"de": "Regulierungsliste", "en": "Regulations list", "es": "Lista de regulaciones", "fr": "Liste des réglementations", "it": "Elenco regolamenti", "zh": "法规清单"},
+    "page_regulations_list": {"de": "Regulierungsliste", "en": "Regulations list", "es": "Lista de regulaciones", "fr": "Liste des réglementations", "it": "Elenco regolamenti", "zh": "法规清单"},
+    "col_regulation": {"de": "Regulierung", "en": "Regulation", "es": "Regulación", "fr": "Réglementation", "it": "Regolamento", "zh": "法规"},
+    "col_guidelines": {"de": "Guidelines", "en": "Guidelines", "es": "Directrices", "fr": "Lignes directrices", "it": "Linee guida", "zh": "指南"},
+    "col_link_date": {"de": "Quelle & Stand", "en": "Source & as of", "es": "Fuente y fecha", "fr": "Source & mise à jour", "it": "Fonte e aggiornamento", "zh": "来源与截至日期"},
+    "stand_label": {"de": "Stand", "en": "As of", "es": "Fecha", "fr": "Mise à jour", "it": "Aggiornamento", "zh": "截至"},
+    "no_guidelines": {"de": "—", "en": "—", "es": "—", "fr": "—", "it": "—", "zh": "—"},
+    "reglist_search_placeholder": {"de": "Suchen (Regulierung, Guideline, …)", "en": "Search (regulation, guideline, …)", "es": "Buscar (regulación, directriz, …)", "fr": "Rechercher (réglementation, ligne directrice, …)", "it": "Cerca (regolamento, linea guida, …)", "zh": "搜索（法规、指南……）"},
+    "open_source": {"de": "Zur Quelle", "en": "Open source", "es": "Abrir fuente", "fr": "Ouvrir la source", "it": "Apri fonte", "zh": "打开来源"},
     "btn_save_master": {
         "de": "Stammdaten speichern",
         "en": "Save master data",

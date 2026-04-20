@@ -201,7 +201,112 @@ def get_cached_text(reg_key: str, language: str = "de") -> dict | None:
     init_fetcher()
     with _conn() as c:
         row = c.execute(
-            "SELECT text, fetched_at FROM law_texts WHERE reg_key = ? AND language = ?",
+            "SELECT text, fetched_at, last_modified FROM law_texts WHERE reg_key = ? AND language = ?",
             (reg_key, language),
+        ).fetchone()
+    return dict(row) if row else None
+
+
+# ---------------------------------------------------------------------------
+# Generisches Fetching beliebiger URLs (z.B. Guidelines)
+# ---------------------------------------------------------------------------
+import hashlib as _hashlib
+
+
+def _guideline_key(url: str) -> str:
+    """Stabile Cache-Key fuer beliebige URLs (teilt sich die `law_texts`-Tabelle)."""
+    return "GUIDE:" + _hashlib.sha256(url.encode("utf-8")).hexdigest()[:20]
+
+
+def fetch_url_text(url: str, *, language: str = "de", force: bool = False) -> dict:
+    """Laedt eine beliebige URL (HTML/PDF), cached sie in der `law_texts`-Tabelle.
+
+    Rueckgabe wie bei `fetch_law_text`:
+        {text, fetched_at, last_modified, is_new, error, status}.
+
+    Wird u.a. fuer Guidelines verwendet. Nutzt den gleichen ETag/Last-Modified-
+    Mechanismus, damit Wiederholungs-Fetches billig bleiben.
+    """
+    init_fetcher()
+    cache_key = _guideline_key(url)
+    with _conn() as c:
+        row = c.execute(
+            "SELECT text, etag, last_modified, fetched_at FROM law_texts "
+            "WHERE reg_key = ? AND language = ?",
+            (cache_key, language),
+        ).fetchone()
+
+    headers = {"User-Agent": USER_AGENT, "Accept-Language": _accept_language(language)}
+    if row and not force:
+        if row["etag"]:
+            headers["If-None-Match"] = row["etag"]
+        if row["last_modified"]:
+            headers["If-Modified-Since"] = row["last_modified"]
+
+    try:
+        with httpx.Client(timeout=30, follow_redirects=True, headers=headers) as client:
+            resp = client.get(url)
+    except Exception as e:  # noqa: BLE001
+        if row:
+            return {"text": row["text"], "fetched_at": row["fetched_at"],
+                    "last_modified": row["last_modified"], "is_new": False,
+                    "error": str(e), "status": -1}
+        return {"text": "", "fetched_at": None, "last_modified": None,
+                "is_new": False, "error": str(e), "status": -1}
+
+    if resp.status_code == 304 and row:
+        return {"text": row["text"], "fetched_at": row["fetched_at"],
+                "last_modified": row["last_modified"], "is_new": False,
+                "error": None, "status": 304}
+
+    if resp.status_code >= 400:
+        if row:
+            return {"text": row["text"], "fetched_at": row["fetched_at"],
+                    "last_modified": row["last_modified"], "is_new": False,
+                    "error": f"HTTP {resp.status_code}", "status": resp.status_code}
+        return {"text": "", "fetched_at": None, "last_modified": None,
+                "is_new": False, "error": f"HTTP {resp.status_code}", "status": resp.status_code}
+
+    content_type = (resp.headers.get("content-type") or "").lower()
+    if "pdf" in content_type or url.lower().endswith(".pdf"):
+        text = _extract_pdf(resp.content)
+    else:
+        text = _extract_html(resp.text)
+
+    max_chars = int(os.getenv("FULLTEXT_MAX_CHARS", "40000"))
+    text = text[:max_chars]
+
+    etag = resp.headers.get("etag") or ""
+    last_mod = resp.headers.get("last-modified") or ""
+    now = datetime.utcnow().isoformat()
+    with _conn() as c:
+        c.execute(
+            """
+            INSERT INTO law_texts (reg_key, language, url, text, etag, last_modified, fetched_at, source_status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(reg_key, language) DO UPDATE SET
+                url=excluded.url,
+                text=excluded.text,
+                etag=excluded.etag,
+                last_modified=excluded.last_modified,
+                fetched_at=excluded.fetched_at,
+                source_status=excluded.source_status
+            """,
+            (cache_key, language, url, text, etag, last_mod, now, resp.status_code),
+        )
+
+    return {"text": text, "fetched_at": now, "last_modified": last_mod,
+            "is_new": True, "error": None, "status": resp.status_code}
+
+
+def get_cached_url_text(url: str, language: str = "de") -> dict | None:
+    """Cache-Lookup fuer eine durch `fetch_url_text` geladene URL."""
+    init_fetcher()
+    cache_key = _guideline_key(url)
+    with _conn() as c:
+        row = c.execute(
+            "SELECT text, fetched_at, last_modified FROM law_texts "
+            "WHERE reg_key = ? AND language = ?",
+            (cache_key, language),
         ).fetchone()
     return dict(row) if row else None

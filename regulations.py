@@ -342,6 +342,65 @@ REGULATIONS = [
     },
 ]
 
+
+# ---------------------------------------------------------------------------
+# Guidelines je Regulierung.
+#
+# Quelle: offizielle Kommissions-/Behörden-Leitlinien (EU Commission, BAFA,
+# EFRAG, ESMA ...). Werden beim Analyse-Lauf zusätzlich zum Gesetzestext
+# gefetched und als Kontext an das LLM übergeben. Auf der Seite
+# "Regulierungsliste" werden sie mit Link + Stand angezeigt.
+#
+# Schema: {reg_key: [{"name": str, "url": str}, ...]}
+# Nicht aufgeführte reg_keys haben aktuell keine kuratierten Guidelines.
+# ---------------------------------------------------------------------------
+GUIDELINES_BY_REG_KEY: dict[str, list[dict]] = {
+    "CSDDD": [
+        {"name": "EU-Kommission – Corporate Sustainability Due Diligence",
+         "url": "https://commission.europa.eu/business-economy-euro/doing-business-eu/sustainability-due-diligence-responsible-business/corporate-sustainability-due-diligence_en"},
+    ],
+    "LkSG": [
+        {"name": "BAFA – Handreichungen zum LkSG",
+         "url": "https://www.bafa.de/DE/Lieferketten/Handreichungen/handreichungen_node.html"},
+        {"name": "BMAS/CSR in Deutschland – LkSG FAQ",
+         "url": "https://www.csr-in-deutschland.de/DE/Wirtschaft-Menschenrechte/Ueber-das-Gesetz/FAQ/faq_node.html"},
+    ],
+    "EUDR": [
+        {"name": "EU-Kommission – Entwaldungsfreie Lieferketten (EUDR)",
+         "url": "https://environment.ec.europa.eu/topics/forests/deforestation/regulation-deforestation-free-products_en"},
+    ],
+    "FLR": [
+        {"name": "EU-Kommission – Forced Labour Regulation",
+         "url": "https://commission.europa.eu/business-economy-euro/doing-business-eu/sustainable-economy/forced-labour-regulation_en"},
+    ],
+    "CSRD": [
+        {"name": "EU-Kommission – CSRD Implementierung & Q&A",
+         "url": "https://finance.ec.europa.eu/regulation-and-supervision/financial-services-legislation/implementing-and-delegated-acts/corporate-sustainability-reporting-directive_en"},
+    ],
+    "ESRS": [
+        {"name": "EFRAG – European Sustainability Reporting Standards",
+         "url": "https://www.efrag.org/en/projects/european-sustainability-reporting-standards-esrs"},
+    ],
+    "TaxonomieVO": [
+        {"name": "EU-Kommission – EU-Taxonomie",
+         "url": "https://finance.ec.europa.eu/sustainable-finance/tools-and-standards/eu-taxonomy-sustainable-activities_en"},
+    ],
+    "SFDR": [
+        {"name": "EU-Kommission – SFDR Offenlegungspflichten",
+         "url": "https://finance.ec.europa.eu/sustainable-finance/disclosures/sustainability-related-disclosure-financial-services-sector_en"},
+    ],
+    "MinRohSorgG": [
+        {"name": "BAFA – Mineralische Rohstoffe",
+         "url": "https://www.bafa.de/DE/Wirtschaft_Rohstoffe/Mineralische_Rohstoffe/mineralische_rohstoffe_node.html"},
+    ],
+}
+
+
+def guidelines_for(reg_key: str) -> list[dict]:
+    """Liefert die kuratierten Guidelines für eine Regulierung (oder leere Liste)."""
+    return GUIDELINES_BY_REG_KEY.get(reg_key, [])
+
+
 # Branchen: sprachneutrale Keys (= DE-String mit Umlauten) für DB-Persistenz.
 # Übersetzungen: siehe i18n.BRANCH_LABELS
 BRANCHES = [

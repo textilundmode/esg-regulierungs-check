@@ -38,7 +38,7 @@ from i18n import (
     t_opt,
 )
 from llm import analyze_streaming, profile_hash, reg_hash
-from fetcher import fetch_law_text, get_cached_text
+from fetcher import fetch_law_text, fetch_url_text, get_cached_text, get_cached_url_text
 from regulations import (
     BRANCHES,
     GROUP_ROLES,
@@ -47,6 +47,7 @@ from regulations import (
     PRODUCT_CATEGORIES,
     REGULATIONS,
     SITE_TYPES,
+    guidelines_for,
 )
 from views import render_cards_html, render_csv
 
@@ -275,12 +276,24 @@ def _run_analysis_bg(uid: int, profile: dict, lang: str) -> None:
         total = len(REGULATIONS)
         status.update({"phase": "texts", "done": 0, "total": total, "name": ""})
 
-        # Phase 1: Volltexte (immer Aktualität prüfen via ETag/Last-Modified)
+        # Phase 1: Volltexte + Guidelines (immer Aktualität prüfen via ETag/Last-Modified)
         texts: dict[str, str] = {}
+        max_chars = int(os.getenv("FULLTEXT_MAX_CHARS", "40000"))
         for i, reg in enumerate(REGULATIONS, 1):
             status.update({"done": i, "name": reg["name"]})
             res = fetch_law_text(reg, language=lang)
-            texts[reg["key"]] = res.get("text") or ""
+            law_text = res.get("text") or ""
+
+            # Guidelines anhängen (mit Label), damit das LLM sie als Kontext sieht.
+            parts: list[str] = [f"=== GESETZESTEXT: {reg.get('full_name') or reg['name']} ===", law_text]
+            for g in guidelines_for(reg["key"]):
+                g_res = fetch_url_text(g["url"], language=lang)
+                g_text = (g_res.get("text") or "").strip()
+                if g_text:
+                    parts.append(f"\n=== GUIDELINE: {g['name']} ({g['url']}) ===\n{g_text}")
+
+            combined = "\n".join(parts)[:max_chars]
+            texts[reg["key"]] = combined
 
         # Phase 2: LLM-Analyse
         cached_hits: list[dict] = []
@@ -370,6 +383,43 @@ def fullscreen():
     lang = normalize_lang(request.args.get("lang") or _lang())
     cards_html = render_cards_html(last["result"], lang)
     return render_template("fullscreen.html", cards_html=cards_html, last=last, lang=lang)
+
+
+@app.route("/regulierungsliste")
+def regulations_list():
+    """Tabellarische Uebersicht aller Regulierungen + Guidelines + Stand."""
+    redir = _require_login()
+    if redir:
+        return redir
+    lang = _lang()
+    rows = []
+    for reg in REGULATIONS:
+        # Stand des Gesetzestextes
+        law_cache = get_cached_text(reg["key"], language=lang) or {}
+        stand = law_cache.get("last_modified") or law_cache.get("fetched_at")
+
+        # Guidelines inkl. Cache-Stand (nur Metadaten, kein Re-Fetch hier).
+        guides = []
+        for g in guidelines_for(reg["key"]):
+            gc = get_cached_url_text(g["url"], language=lang) or {}
+            guides.append({
+                "name": g["name"],
+                "url": g["url"],
+                "stand": gc.get("last_modified") or gc.get("fetched_at"),
+            })
+
+        rows.append({
+            "nr": reg["nr"],
+            "key": reg["key"],
+            "name": reg["name"],
+            "full_name": reg.get("full_name") or reg["name"],
+            "scope": reg.get("scope") or "",
+            "url": reg["url"],
+            "key_article": reg.get("key_article") or "",
+            "stand": stand,
+            "guidelines": guides,
+        })
+    return render_template("regulierungsliste.html", rows=rows, lang=lang)
 
 
 @app.route("/download-csv")

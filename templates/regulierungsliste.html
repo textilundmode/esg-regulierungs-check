@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="section">
+  <h2>{{ t("page_regulations_list", lang) }}</h2>
+
+  <div style="margin-bottom:14px;">
+    <input type="text" id="reg-search" placeholder="{{ t('reglist_search_placeholder', lang) }}"
+           oninput="filterRegTable()" style="max-width:420px;">
+  </div>
+
+  <div style="overflow-x:auto;">
+    <table class="reg-table">
+      <thead>
+        <tr>
+          <th style="width:28%;">{{ t("col_regulation", lang) }}</th>
+          <th style="width:42%;">{{ t("col_guidelines", lang) }}</th>
+          <th style="width:30%;">{{ t("col_link_date", lang) }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr class="reg-row">
+          <td>
+            <div class="reg-title">
+              <span class="reg-nr">Nr. {{ row.nr }}</span>
+              <strong>{{ row.name }}</strong>
+              {% if row.scope %}<span class="badge-scope">{{ row.scope }}</span>{% endif %}
+            </div>
+            <div class="reg-full">{{ row.full_name }}</div>
+            {% if row.key_article %}
+            <div class="reg-article">{{ row.key_article }}</div>
+            {% endif %}
+          </td>
+          <td>
+            {% if row.guidelines %}
+              <ul class="guide-list">
+                {% for g in row.guidelines %}
+                <li>
+                  <a href="{{ g.url }}" target="_blank" rel="noopener">{{ g.name }}</a>
+                  {% if g.stand %}
+                  <span class="guide-stand">· {{ t("stand_label", lang) }}: {{ g.stand[:10] }}</span>
+                  {% endif %}
+                </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <span style="color:#888;">{{ t("no_guidelines", lang) }}</span>
+            {% endif %}
+          </td>
+          <td>
+            <a href="{{ row.url }}" target="_blank" rel="noopener" class="source-link">
+              {{ t("open_source", lang) }} ↗
+            </a>
+            {% if row.stand %}
+            <div class="guide-stand">{{ t("stand_label", lang) }}: {{ row.stand[:10] }}</div>
+            {% else %}
+            <div class="guide-stand">{{ t("stand_label", lang) }}: —</div>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+  .reg-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .reg-table th, .reg-table td { padding: 10px 12px; text-align: left; vertical-align: top;
+    border-bottom: 1px solid #e8e8e8; }
+  .reg-table th { background: #f1f3f5; color: #1f4e3d; font-weight: 700; }
+  .reg-table tr:hover td { background: #fafcfb; }
+  .reg-title { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 2px; }
+  .reg-nr { color: #888; font-size: 12px; }
+  .reg-full { color: #555; font-size: 13px; line-height: 1.35; }
+  .reg-article { color: #888; font-size: 12px; margin-top: 4px; font-style: italic; }
+  .badge-scope { padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: 700;
+    background: #e8f5e9; color: #1b5e20; letter-spacing: 0.3px; }
+  .guide-list { margin: 0; padding-left: 18px; }
+  .guide-list li { margin-bottom: 4px; line-height: 1.4; }
+  .guide-list a { color: #1f4e3d; text-decoration: none; }
+  .guide-list a:hover { text-decoration: underline; }
+  .guide-stand { color: #888; font-size: 12px; }
+  .source-link { color: #1f4e3d; font-weight: 600; text-decoration: none; }
+  .source-link:hover { text-decoration: underline; }
+</style>
+
+<script>
+  function filterRegTable() {
+    var q = (document.getElementById('reg-search').value || '').toLowerCase();
+    document.querySelectorAll('.reg-row').forEach(function (row) {
+      var txt = row.textContent.toLowerCase();
+      row.style.display = (!q || txt.indexOf(q) >= 0) ? '' : 'none';
+    });
+  }
+</script>
+{% endblock %}

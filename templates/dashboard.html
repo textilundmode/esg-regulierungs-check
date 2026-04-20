@@ -131,6 +131,10 @@
       <a href="{{ url_for('fullscreen') }}" target="_blank" class="btn btn-sm" style="background:#e8e8e8;color:#333;">{{ t("btn_open_fullscreen", lang) }}</a>
       <a href="{{ url_for('download_csv') }}" class="btn btn-sm" style="background:#e8e8e8;color:#333;">📥 CSV</a>
       {% endif %}
+      <a href="{{ url_for('regulations_list') }}" target="_blank" rel="noopener"
+         class="btn btn-primary" style="margin-left:auto;background:#2d8262;">
+        {{ t("btn_regulations_list", lang) }}
+      </a>
     </div>
 
     {% if cards_html %}
