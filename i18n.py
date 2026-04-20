@@ -330,6 +330,22 @@ UI: dict[str, dict[str, str]] = {
         "it": "Importante per la direttiva EmpCo e Green Claims.",
         "zh": "对 EmpCo 指令和绿色声明很重要。",
     },
+    "field_eu_importer": {
+        "de": "EU-Importeur / erstmaliges Inverkehrbringen in der EU",
+        "en": "EU importer / first placing on the EU market",
+        "es": "Importador en la UE / primera puesta en el mercado de la UE",
+        "fr": "Importateur UE / première mise sur le marché de l'UE",
+        "it": "Importatore UE / prima immissione sul mercato UE",
+        "zh": "欧盟进口商 / 首次在欧盟市场投放",
+    },
+    "field_eu_importer_help": {
+        "de": "Führt Ihr Unternehmen Produkte aus Drittländern in die EU ein und stellt diese auf dem EU-Markt bereit bzw. bringt sie erstmals in Verkehr? Relevant u.a. für EUDR, FLR, PPWR, Ökodesign-VO, Konfliktmineralien-VO.",
+        "en": "Does your company import products from third countries into the EU and make them available on the EU market or place them on the market for the first time? Relevant for EUDR, FLR, PPWR, Ecodesign Regulation, Conflict Minerals Regulation.",
+        "es": "¿Su empresa importa productos de terceros países a la UE y los comercializa en el mercado de la UE o los introduce por primera vez en el mercado? Relevante para EUDR, FLR, PPWR, Reglamento de Ecodiseño, Reglamento de Minerales en Conflicto.",
+        "fr": "Votre entreprise importe-t-elle des produits de pays tiers dans l'UE et les met-elle à disposition sur le marché de l'UE ou les place-t-elle pour la première fois sur le marché ? Pertinent pour EUDR, FLR, PPWR, règlement Écoconception, règlement sur les minéraux de conflit.",
+        "it": "La vostra azienda importa prodotti da paesi terzi nell'UE e li mette a disposizione sul mercato UE o li immette sul mercato per la prima volta? Rilevante per EUDR, FLR, PPWR, Regolamento Ecodesign, Regolamento sui Minerali di Conflitto.",
+        "zh": "贵公司是否从第三国向欧盟进口产品，并在欧盟市场上提供或首次投放市场？涉及 EUDR、FLR、PPWR、生态设计条例、冲突矿产条例等。",
+    },
 
     # Product categories / sites
     "section_products": {

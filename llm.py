@@ -71,6 +71,7 @@ Industry: {branch}
 B2C business: {b2c}
 Capital-market oriented: {listed}
 Environmental claims/labels in marketing: {env_claims}
+EU importer (places products from third countries on the EU market / first placing on the market): {eu_importer}
 Product categories: {product_categories}
 Sites:
 {sites_block}"""
@@ -115,6 +116,7 @@ def _format_profile(profile: dict) -> str:
         b2c="yes" if profile.get("b2c") else "no",
         listed="yes" if profile.get("listed") else "no",
         env_claims="yes" if profile.get("env_claims") else "no",
+        eu_importer="yes" if profile.get("eu_importer") else "no",
         product_categories=product_block,
         sites_block=sites_block,
     )
@@ -123,7 +125,7 @@ def _format_profile(profile: dict) -> str:
 def profile_hash(profile: dict) -> str:
     keys = [
         "name", "employees", "employees_de", "revenue_eur", "balance_sheet_eur", "branch",
-        "b2c", "listed", "env_claims", "legal_form", "group_role",
+        "b2c", "listed", "env_claims", "eu_importer", "legal_form", "group_role",
         "sites", "product_categories", "language",
     ]
     stable = {k: profile.get(k) for k in keys}

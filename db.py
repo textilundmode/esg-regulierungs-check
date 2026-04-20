@@ -28,6 +28,7 @@ COMPANY_EXTRA_COLUMNS = [
     ("product_categories_json", "TEXT"),
     ("employees_de", "INTEGER DEFAULT 0"),
     ("language", "TEXT DEFAULT 'de'"),
+    ("eu_importer", "INTEGER DEFAULT 0"),
 ]
 
 
@@ -123,6 +124,7 @@ def get_company(user_id: int) -> Optional[dict]:
     data["b2c"] = bool(data.get("b2c"))
     data["listed"] = bool(data.get("listed"))
     data["env_claims"] = bool(data.get("env_claims"))
+    data["eu_importer"] = bool(data.get("eu_importer"))
     return data
 
 
@@ -136,9 +138,10 @@ def upsert_company(user_id: int, data: dict) -> None:
             INSERT INTO companies (
                 user_id, name, employees, revenue_eur, branch, b2c, listed,
                 sites_json, updated_at, balance_sheet_eur, legal_form, group_role,
-                env_claims, product_categories_json, employees_de, language
+                env_claims, product_categories_json, employees_de, language,
+                eu_importer
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(user_id) DO UPDATE SET
                 name=excluded.name,
                 employees=excluded.employees,
@@ -154,7 +157,8 @@ def upsert_company(user_id: int, data: dict) -> None:
                 env_claims=excluded.env_claims,
                 product_categories_json=excluded.product_categories_json,
                 employees_de=excluded.employees_de,
-                language=excluded.language
+                language=excluded.language,
+                eu_importer=excluded.eu_importer
             """,
             (
                 user_id,
@@ -173,6 +177,7 @@ def upsert_company(user_id: int, data: dict) -> None:
                 products_json,
                 int(data.get("employees_de") or 0),
                 data.get("language") or "de",
+                1 if data.get("eu_importer") else 0,
             ),
         )
 

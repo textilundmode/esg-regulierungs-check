@@ -65,6 +65,12 @@
           <label for="env_claims">{{ t("field_env_claims", lang) }}</label>
         </div>
         <p class="help-text">{{ t("field_env_claims_help", lang) }}</p>
+
+        <div class="checkbox-row" style="margin-top:12px;">
+          <input type="checkbox" id="eu_importer" name="eu_importer" {{ 'checked' if company.get('eu_importer') }}>
+          <label for="eu_importer">{{ t("field_eu_importer", lang) }}</label>
+        </div>
+        <p class="help-text">{{ t("field_eu_importer_help", lang) }}</p>
       </div>
     </div>
 

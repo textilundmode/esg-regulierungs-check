@@ -252,6 +252,7 @@ def save_company():
         "b2c": "b2c" in f,
         "listed": "listed" in f,
         "env_claims": "env_claims" in f,
+        "eu_importer": "eu_importer" in f,
         "product_categories": f.getlist("product_categories"),
         "sites": sites,
         "language": lang,
