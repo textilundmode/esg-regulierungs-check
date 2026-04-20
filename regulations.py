@@ -1,4 +1,4 @@
-"""Kuratierte Liste der 23 ESG-/CSR-Regulierungen mit Anwendbarkeitskriterien.
+"""Kuratierte Liste der 22 ESG-/CSR-Regulierungen mit Anwendbarkeitskriterien.
 
 Die `criteria`-Felder sind bewusst in natürlicher Sprache gehalten, damit
 Claude sie gemeinsam mit dem Unternehmensprofil auswerten kann.
@@ -10,8 +10,8 @@ REGULATIONS = [
         "key": "CSDDD",
         "name": "CSDDD",
         "full_name": "Richtlinie (EU) 2024/1760 - Sorgfaltspflichten von Unternehmen im Hinblick auf Nachhaltigkeit",
-        "url": "https://eur-lex.europa.eu/eli/dir/2024/1760/oj",
-        "text_url": "https://eur-lex.europa.eu/eli/dir/2024/1760/oj",
+        "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A02024L1760-20260318",
+        "text_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A02024L1760-20260318",
         "scope": "EU",
         "criteria": (
             "Gilt für EU-Unternehmen mit >1000 Beschäftigten UND Nettoumsatz >450 Mio EUR weltweit. "
@@ -26,7 +26,8 @@ REGULATIONS = [
         "key": "LkSG",
         "name": "LkSG",
         "full_name": "Lieferkettensorgfaltspflichtengesetz",
-        "url": "https://www.gesetze-im-internet.de/lksg/",
+        "url": "https://www.bafa.de/DE/Lieferketten/Ueberblick/ueberblick_node.html",
+        "text_url": "https://www.bafa.de/DE/Lieferketten/Ueberblick/ueberblick_node.html",
         "scope": "DE",
         "criteria": (
             "Gilt für Unternehmen mit Hauptverwaltung, Hauptniederlassung, Verwaltungssitz, satzungsmäßigem "
@@ -71,8 +72,8 @@ REGULATIONS = [
         "key": "CSRD",
         "name": "CSRD",
         "full_name": "Richtlinie (EU) 2022/2464 - Nachhaltigkeitsberichterstattung",
-        "url": "https://eur-lex.europa.eu/eli/dir/2022/2464/oj",
-        "text_url": "https://eur-lex.europa.eu/eli/dir/2022/2464/oj",
+        "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A02022L2464-20260318",
+        "text_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A02022L2464-20260318",
         "scope": "EU",
         "criteria": (
             "Nach Omnibus I (2026/470) geänderter Anwendungsbereich: Große Unternehmen mit >1000 Beschäftigten "
@@ -100,8 +101,8 @@ REGULATIONS = [
         "key": "ESRS",
         "name": "ESRS",
         "full_name": "Delegierte Verordnung (EU) 2023/2772 - Nachhaltigkeitsberichterstattung (Standards)",
-        "url": "https://eur-lex.europa.eu/eli/reg_del/2023/2772/oj",
-        "text_url": "https://eur-lex.europa.eu/eli/reg_del/2023/2772/oj",
+        "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A02022L2464-20260318",
+        "text_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A02022L2464-20260318",
         "scope": "EU",
         "criteria": (
             "Technische Standards für die Nachhaltigkeitsberichterstattung. Gelten für alle Unternehmen, "
@@ -158,8 +159,8 @@ REGULATIONS = [
         "key": "SFDR",
         "name": "SFDR",
         "full_name": "Verordnung (EU) 2019/2088 - nachhaltigkeitsbezogene Offenlegungspflichten",
-        "url": "https://eur-lex.europa.eu/eli/reg/2019/2088/oj",
-        "text_url": "https://eur-lex.europa.eu/eli/reg/2019/2088/oj",
+        "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A02019R2088-20240109",
+        "text_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A02019R2088-20240109",
         "scope": "EU",
         "criteria": (
             "Gilt ausschließlich für Finanzmarktteilnehmer (Vermögensverwalter, Versicherer, AIFM, UCITS) "
@@ -187,8 +188,8 @@ REGULATIONS = [
         "key": "WhistleblowerRL",
         "name": "Whistleblower-Richtlinie",
         "full_name": "Richtlinie (EU) 2019/1937 - Schutz von Hinweisgebern",
-        "url": "https://eur-lex.europa.eu/eli/dir/2019/1937/oj",
-        "text_url": "https://eur-lex.europa.eu/eli/dir/2019/1937/oj",
+        "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A02019L1937-20241230",
+        "text_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A02019L1937-20241230",
         "scope": "EU",
         "criteria": (
             "Richtet sich an Mitgliedstaaten. In DE umgesetzt durch HinSchG. "
@@ -229,8 +230,8 @@ REGULATIONS = [
         "key": "Oekodesign",
         "name": "Ökodesign-VO",
         "full_name": "Verordnung (EU) 2024/1781 - nachhaltige Produkte (ESPR)",
-        "url": "https://eur-lex.europa.eu/eli/reg/2024/1781/oj",
-        "text_url": "https://eur-lex.europa.eu/eli/reg/2024/1781/oj",
+        "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A02024R1781-20240628",
+        "text_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A02024R1781-20240628",
         "scope": "EU",
         "criteria": (
             "Gilt für Hersteller, Importeure, Händler von physischen Produkten (mit Ausnahmen wie Lebensmittel) "
@@ -259,8 +260,8 @@ REGULATIONS = [
         "key": "KonfliktminVO",
         "name": "Konfliktmineralien-VO",
         "full_name": "Verordnung (EU) 2017/821 - Konfliktmineralien",
-        "url": "https://eur-lex.europa.eu/eli/reg/2017/821/oj",
-        "text_url": "https://eur-lex.europa.eu/eli/reg/2017/821/oj",
+        "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A02017R0821-20201119",
+        "text_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A02017R0821-20201119",
         "scope": "EU",
         "criteria": (
             "Gilt für Unionseinführer von Zinn, Tantal, Wolfram, deren Erzen und Gold. "
@@ -301,9 +302,9 @@ REGULATIONS = [
         "nr": 21,
         "key": "EmpCo",
         "name": "EmpCo",
-        "full_name": "Richtlinie (EU) 2024/825 - Stärkung der Verbraucher für den ökologischen Wandel",
-        "url": "https://eur-lex.europa.eu/eli/dir/2024/825/oj",
-        "text_url": "https://eur-lex.europa.eu/eli/dir/2024/825/oj",
+        "full_name": "Richtlinie (EU) 2024/825 - Stärkung der Verbraucher für den ökologischen Wandel (UWG-Umsetzung DE)",
+        "url": "https://www.gesetze-im-internet.de/uwg_2004/BJNR141400004.html",
+        "text_url": "https://www.gesetze-im-internet.de/uwg_2004/BJNR141400004.html",
         "scope": "EU",
         "criteria": (
             "Gilt für alle Unternehmen, die Verbrauchern gegenüber Umweltaussagen machen oder Nachhaltigkeits"
@@ -324,21 +325,6 @@ REGULATIONS = [
             "Umweltaussagen. Kleinstunternehmen (<10 MA & Umsatz <2 Mio EUR) ausgenommen."
         ),
         "key_article": "Art. 1, 3",
-    },
-    {
-        "nr": 23,
-        "key": "OmnibusI",
-        "name": "Omnibus I-Richtlinie",
-        "full_name": "Richtlinie (EU) 2026/470 - Änderung CSRD/CSDDD (Omnibus I)",
-        "url": "https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX:32026L0470",
-        "text_url": "https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX:32026L0470",
-        "scope": "EU",
-        "criteria": (
-            "Ändert CSRD und CSDDD: erhöhte Schwellen, verschobene Fristen, reduzierte Berichtspflichten. "
-            "Keine eigenständige Berichtspflicht, sondern Modifikationsnorm. "
-            "Relevant sobald CSRD oder CSDDD einschlägig ist."
-        ),
-        "key_article": "Art. 1, 2",
     },
 ]
 
@@ -445,10 +431,6 @@ GUIDELINES_BY_REG_KEY: dict[str, list[dict]] = {
         {"name": "EU-Kommission – Green Claims",
          "url": "https://environment.ec.europa.eu/topics/circular-economy/green-claims_en"},
     ],
-    "OmnibusI": [
-        {"name": "EU-Kommission – Simplification / Omnibus-Paket",
-         "url": "https://commission.europa.eu/business-economy-euro/doing-business-eu/sustainability-due-diligence-responsible-business/simplification_en"},
-    ],
 }
 
 
@@ -487,7 +469,6 @@ PUBLISHED_BY_REG_KEY: dict[str, str] = {
     "UmweltstrafRL":   "30.04.2024",
     "EmpCo":           "06.03.2024",
     "GreenClaims":     "Entwurf 22.03.2023",
-    "OmnibusI":        "2026",
 }
 
 
