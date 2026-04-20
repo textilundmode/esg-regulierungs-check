@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import csv
 import io
+import re
 from html import escape
 
 APPLIES_ORDER = {"error": 0, "ja": 1, "moeglich": 2, "nein": 3}
@@ -75,6 +76,32 @@ BADGE_STYLES = {
 }
 
 
+_PASSAGE_MAX_CHARS = 280
+
+
+def _shorten_passage(text: str) -> str:
+    """Kurzform fuer das 'Greifende Stelle'-Feld.
+
+    Manche Modelle liefern ganze Paragraphen-Listen statt einem kurzen Zitat.
+    Wir nehmen den ersten Satz oder die ersten 280 Zeichen; der Rest wird
+    mit … abgeschnitten.
+    """
+    t = (text or "").strip()
+    if not t:
+        return ""
+    # Zeilenumbrueche und Aufzaehlungspunkte entfernen
+    t = re.sub(r"\s*[\r\n]+\s*[-*•]?\s*", " ", t)
+    t = re.sub(r"\s{2,}", " ", t).strip()
+    if len(t) <= _PASSAGE_MAX_CHARS:
+        return t
+    cut = t[:_PASSAGE_MAX_CHARS]
+    # Wenn moeglich nach Satzende kappen
+    dot = max(cut.rfind(". "), cut.rfind("! "), cut.rfind("? "))
+    if dot > _PASSAGE_MAX_CHARS // 2:
+        return cut[:dot + 1].rstrip() + " …"
+    return cut.rstrip() + " …"
+
+
 def _card_html(r: dict, lang_dict: dict) -> str:
     a = r["applies"]
     bg, icon = BADGE_STYLES.get(a, ("background:#999;color:white;", "·"))
@@ -83,7 +110,7 @@ def _card_html(r: dict, lang_dict: dict) -> str:
     full = escape(r["full_name"])
     url = escape(r["url"])
     article = escape(r.get("article") or "")
-    passage = escape(r.get("passage") or "")
+    passage = escape(_shorten_passage(r.get("passage") or ""))
     reason_raw = (r.get("reason") or "").strip()
     reason = escape(reason_raw) if reason_raw else f'<em style="color:#aaa;">{escape(lang_dict["reason_missing"])}</em>'
     nr = r.get("nr", "")
