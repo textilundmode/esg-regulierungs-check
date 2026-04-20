@@ -218,7 +218,8 @@ def _guideline_key(url: str) -> str:
     return "GUIDE:" + _hashlib.sha256(url.encode("utf-8")).hexdigest()[:20]
 
 
-def fetch_url_text(url: str, *, language: str = "de", force: bool = False) -> dict:
+def fetch_url_text(url: str, *, language: str = "de", force: bool = False,
+                    timeout: float = 30.0) -> dict:
     """Laedt eine beliebige URL (HTML/PDF), cached sie in der `law_texts`-Tabelle.
 
     Rueckgabe wie bei `fetch_law_text`:
@@ -226,6 +227,9 @@ def fetch_url_text(url: str, *, language: str = "de", force: bool = False) -> di
 
     Wird u.a. fuer Guidelines verwendet. Nutzt den gleichen ETag/Last-Modified-
     Mechanismus, damit Wiederholungs-Fetches billig bleiben.
+
+    `timeout` (Sekunden) laesst sich fuer sekundaere Quellen (z.B. Guidelines)
+    kuerzen, damit ein einzelner langsamer Server nicht die ganze Analyse blockt.
     """
     init_fetcher()
     cache_key = _guideline_key(url)
@@ -244,7 +248,7 @@ def fetch_url_text(url: str, *, language: str = "de", force: bool = False) -> di
             headers["If-Modified-Since"] = row["last_modified"]
 
     try:
-        with httpx.Client(timeout=30, follow_redirects=True, headers=headers) as client:
+        with httpx.Client(timeout=timeout, follow_redirects=True, headers=headers) as client:
             resp = client.get(url)
     except Exception as e:  # noqa: BLE001
         if row:

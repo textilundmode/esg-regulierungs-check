@@ -287,12 +287,17 @@ def _run_analysis_bg(uid: int, profile: dict, lang: str) -> None:
             law_text = res.get("text") or ""
 
             # Guidelines anhängen (mit Label), damit das LLM sie als Kontext sieht.
+            # Kurzer Timeout (8s), damit eine langsame Guideline-URL nicht die
+            # ganze Analyse blockiert. Fehler werden still uebergangen.
             parts: list[str] = [f"=== GESETZESTEXT: {reg.get('full_name') or reg['name']} ===", law_text]
             for g in guidelines_for(reg["key"]):
-                g_res = fetch_url_text(g["url"], language=lang)
-                g_text = (g_res.get("text") or "").strip()
-                if g_text:
-                    parts.append(f"\n=== GUIDELINE: {g['name']} ({g['url']}) ===\n{g_text}")
+                try:
+                    g_res = fetch_url_text(g["url"], language=lang, timeout=8.0)
+                    g_text = (g_res.get("text") or "").strip()
+                    if g_text:
+                        parts.append(f"\n=== GUIDELINE: {g['name']} ({g['url']}) ===\n{g_text}")
+                except Exception as e:  # noqa: BLE001
+                    print(f"[guideline-fetch] skipped {g['url']}: {e}", flush=True)
 
             combined = "\n".join(parts)[:max_chars]
             texts[reg["key"]] = combined
