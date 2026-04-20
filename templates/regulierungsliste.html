@@ -38,9 +38,7 @@
                 {% for g in row.guidelines %}
                 <li>
                   <a href="{{ g.url }}" target="_blank" rel="noopener">{{ g.name }}</a>
-                  {% if g.stand %}
-                  <span class="guide-stand">· {{ t("stand_label", lang) }}: {{ g.stand[:10] }}</span>
-                  {% endif %}
+                  <span class="guide-stand">· {{ t("stand_label", lang) }}: {{ g.stand }}</span>
                 </li>
                 {% endfor %}
               </ul>
@@ -52,11 +50,7 @@
             <a href="{{ row.url }}" target="_blank" rel="noopener" class="source-link">
               {{ t("open_source", lang) }} ↗
             </a>
-            {% if row.stand %}
-            <div class="guide-stand">{{ t("stand_label", lang) }}: {{ row.stand[:10] }}</div>
-            {% else %}
-            <div class="guide-stand">{{ t("stand_label", lang) }}: —</div>
-            {% endif %}
+            <div class="guide-stand">{{ t("stand_label", lang) }}: {{ row.stand }}</div>
           </td>
         </tr>
         {% endfor %}

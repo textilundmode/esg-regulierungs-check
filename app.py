@@ -385,6 +385,33 @@ def fullscreen():
     return render_template("fullscreen.html", cards_html=cards_html, last=last, lang=lang)
 
 
+def _format_stand(s: str | None) -> str:
+    """Normalisiert Datum aus DB/HTTP-Header auf DD.MM.YYYY.
+
+    Akzeptiert ISO 8601 (fetched_at aus der DB) und RFC 1123 (Last-Modified).
+    Gibt bei Fehlern/None ein Em-Dash zurueck.
+    """
+    from datetime import datetime as _dt
+    from email.utils import parsedate_to_datetime
+    if not s:
+        return "—"
+    # RFC 1123 (HTTP Last-Modified)
+    try:
+        dt = parsedate_to_datetime(s)
+        if dt is not None:
+            return dt.strftime("%d.%m.%Y")
+    except (TypeError, ValueError):
+        pass
+    # ISO 8601 (datetime.utcnow().isoformat())
+    try:
+        txt = s.replace("Z", "+00:00")
+        dt = _dt.fromisoformat(txt)
+        return dt.strftime("%d.%m.%Y")
+    except (TypeError, ValueError):
+        pass
+    return s[:10] if len(s) >= 10 else s
+
+
 @app.route("/regulierungsliste")
 def regulations_list():
     """Tabellarische Uebersicht aller Regulierungen + Guidelines + Stand."""
@@ -396,16 +423,17 @@ def regulations_list():
     for reg in REGULATIONS:
         # Stand des Gesetzestextes
         law_cache = get_cached_text(reg["key"], language=lang) or {}
-        stand = law_cache.get("last_modified") or law_cache.get("fetched_at")
+        stand_raw = law_cache.get("last_modified") or law_cache.get("fetched_at")
 
         # Guidelines inkl. Cache-Stand (nur Metadaten, kein Re-Fetch hier).
         guides = []
         for g in guidelines_for(reg["key"]):
             gc = get_cached_url_text(g["url"], language=lang) or {}
+            g_stand_raw = gc.get("last_modified") or gc.get("fetched_at")
             guides.append({
                 "name": g["name"],
                 "url": g["url"],
-                "stand": gc.get("last_modified") or gc.get("fetched_at"),
+                "stand": _format_stand(g_stand_raw),
             })
 
         rows.append({
@@ -416,7 +444,7 @@ def regulations_list():
             "scope": reg.get("scope") or "",
             "url": reg["url"],
             "key_article": reg.get("key_article") or "",
-            "stand": stand,
+            "stand": _format_stand(stand_raw),
             "guidelines": guides,
         })
     return render_template("regulierungsliste.html", rows=rows, lang=lang)

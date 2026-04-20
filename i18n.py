@@ -61,6 +61,22 @@ UI: dict[str, dict[str, str]] = {
         "it": "© 2026 · Tutti i diritti riservati",
         "zh": "© 2026 · 版权所有",
     },
+    "hinweis_label": {
+        "de": "Hinweis",
+        "en": "Note",
+        "es": "Aviso",
+        "fr": "Note",
+        "it": "Nota",
+        "zh": "说明",
+    },
+    "hinweis_body": {
+        "de": "Diese Projektseite ist mithilfe von Claude Code und OpenAI Codex entstanden.",
+        "en": "This project page was created with the help of Claude Code and OpenAI Codex.",
+        "es": "Esta página del proyecto se creó con la ayuda de Claude Code y OpenAI Codex.",
+        "fr": "Cette page de projet a été créée avec l'aide de Claude Code et d'OpenAI Codex.",
+        "it": "Questa pagina del progetto è stata realizzata con l'aiuto di Claude Code e OpenAI Codex.",
+        "zh": "本项目页面是在 Claude Code 与 OpenAI Codex 的协助下创建的。",
+    },
 
     # Auth
     "tab_login": {"de": "Anmelden", "en": "Sign in", "es": "Iniciar sesión", "fr": "Connexion", "it": "Accedi", "zh": "登录"},

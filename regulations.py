@@ -377,9 +377,21 @@ GUIDELINES_BY_REG_KEY: dict[str, list[dict]] = {
         {"name": "EU-Kommission – CSRD Implementierung & Q&A",
          "url": "https://finance.ec.europa.eu/regulation-and-supervision/financial-services-legislation/implementing-and-delegated-acts/corporate-sustainability-reporting-directive_en"},
     ],
+    "CSRD_DE": [
+        {"name": "IDW – CSRD-Umsetzung in Deutschland",
+         "url": "https://www.idw.de/idw/im-fokus/csrd"},
+    ],
     "ESRS": [
         {"name": "EFRAG – European Sustainability Reporting Standards",
          "url": "https://www.efrag.org/en/projects/european-sustainability-reporting-standards-esrs"},
+    ],
+    "NFRD": [
+        {"name": "EU-Kommission – Non-Financial Reporting (Historie)",
+         "url": "https://finance.ec.europa.eu/capital-markets-union-and-financial-markets/company-reporting-and-auditing/company-reporting/corporate-sustainability-reporting_en"},
+    ],
+    "CSR-RUG": [
+        {"name": "DRSC – Deutsche Anwendungshinweise zur nichtfinanziellen Berichterstattung",
+         "url": "https://www.drsc.de/themen/nachhaltigkeitsberichterstattung/"},
     ],
     "TaxonomieVO": [
         {"name": "EU-Kommission – EU-Taxonomie",
@@ -389,9 +401,53 @@ GUIDELINES_BY_REG_KEY: dict[str, list[dict]] = {
         {"name": "EU-Kommission – SFDR Offenlegungspflichten",
          "url": "https://finance.ec.europa.eu/sustainable-finance/disclosures/sustainability-related-disclosure-financial-services-sector_en"},
     ],
+    "ESGRatingVO": [
+        {"name": "ESMA – ESG Ratings",
+         "url": "https://www.esma.europa.eu/esmas-activities/sustainable-finance/esg-ratings"},
+    ],
+    "WhistleblowerRL": [
+        {"name": "EU-Kommission – Schutz von Hinweisgebern",
+         "url": "https://commission.europa.eu/aid-development-cooperation-fundamental-rights/your-rights-eu/whistleblowers-protection_en"},
+    ],
+    "HinSchG": [
+        {"name": "Bundesamt für Justiz – Externe Meldestelle (HinSchG)",
+         "url": "https://www.bundesjustizamt.de/DE/MeldestelledesBundes/MeldestelledesBundes_node.html"},
+    ],
+    "RightToRepair": [
+        {"name": "EU-Kommission – Right to Repair",
+         "url": "https://commission.europa.eu/strategy-and-policy/priorities-2019-2024/european-green-deal/right-repair_en"},
+    ],
+    "Oekodesign": [
+        {"name": "EU-Kommission – Ecodesign for Sustainable Products Regulation (ESPR)",
+         "url": "https://commission.europa.eu/energy-climate-change-environment/standards-tools-and-labels/products-labelling-rules-and-requirements/sustainable-products/ecodesign-sustainable-products-regulation_en"},
+    ],
+    "PPWR": [
+        {"name": "EU-Kommission – Verpackungen und Verpackungsabfälle",
+         "url": "https://environment.ec.europa.eu/topics/waste-and-recycling/packaging-waste_en"},
+    ],
+    "KonfliktminVO": [
+        {"name": "EU-Kommission – Konfliktmineralien-Verordnung",
+         "url": "https://policy.trade.ec.europa.eu/development-and-sustainability/conflict-minerals-regulation_en"},
+    ],
     "MinRohSorgG": [
         {"name": "BAFA – Mineralische Rohstoffe",
          "url": "https://www.bafa.de/DE/Wirtschaft_Rohstoffe/Mineralische_Rohstoffe/mineralische_rohstoffe_node.html"},
+    ],
+    "UmweltstrafRL": [
+        {"name": "EU-Kommission – Environmental Crime Directive",
+         "url": "https://environment.ec.europa.eu/law/environmental-crime_en"},
+    ],
+    "EmpCo": [
+        {"name": "EU-Kommission – Stärkung der Verbraucher für den grünen Wandel",
+         "url": "https://commission.europa.eu/law/law-topic/consumer-protection-law/empowering-consumers-green-transition_en"},
+    ],
+    "GreenClaims": [
+        {"name": "EU-Kommission – Green Claims",
+         "url": "https://environment.ec.europa.eu/topics/circular-economy/green-claims_en"},
+    ],
+    "OmnibusI": [
+        {"name": "EU-Kommission – Simplification / Omnibus-Paket",
+         "url": "https://commission.europa.eu/business-economy-euro/doing-business-eu/sustainability-due-diligence-responsible-business/simplification_en"},
     ],
 }
 
