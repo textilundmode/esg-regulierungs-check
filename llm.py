@@ -158,7 +158,8 @@ def _extract_json(text: str) -> dict:
     """Robuste JSON-Extraktion.
 
     Versucht der Reihe nach: direktes parse, klammer-balanciertes Substring,
-    trailing-comma-cleanup. Wirft ValueError wenn alles scheitert.
+    trailing-comma-cleanup, und als letzte Rettung ein Auto-Repair fuer
+    abgeschnittene Ausgaben (unterminierter String / fehlende }).
     """
     text = _strip_fences(text or "").strip()
     if not text:
@@ -197,13 +198,30 @@ def _extract_json(text: str) -> dict:
             if depth == 0:
                 end = i + 1
                 break
-    if end < 0:
-        raise ValueError(f"kein vollständiges JSON-Objekt: {text[start:start+200]!r}")
 
-    snippet = text[start:end]
-    # trailing commas vor } oder ] entfernen
-    snippet = re.sub(r",(\s*[}\]])", r"\1", snippet)
-    return json.loads(snippet)
+    if end >= 0:
+        snippet = text[start:end]
+        # trailing commas vor } oder ] entfernen
+        snippet = re.sub(r",(\s*[]}])", r"\1", snippet)
+        return json.loads(snippet)
+
+    # Auto-Repair: Ausgabe wurde mid-string abgeschnitten (z.B. max_tokens-Limit).
+    # Wir schliessen den offenen String und die offenen Objekte, damit wenigstens
+    # die schon geschriebenen Felder parsen.
+    snippet = text[start:]
+    if in_string:
+        snippet += '"'
+    # noch offene { schliessen
+    remaining = depth if not in_string else (depth if depth > 0 else 1)
+    if remaining > 0:
+        snippet += "}" * remaining
+    # trailing commas entfernen
+    snippet = re.sub(r",(\s*[]}])", r"\1", snippet)
+    try:
+        return json.loads(snippet)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"kein vollständiges JSON-Objekt (auto-repair fehlgeschlagen): "
+                         f"{text[start:start+200]!r} / {e}")
 
 
 def _normalize_applies(val: str) -> str:
@@ -382,7 +400,9 @@ async def _analyze_one(client: LLMClient, profile_block: str, reg: dict, fulltex
     print(f"[llm] start {key}", flush=True)
     for attempt in range(6):  # mehr Versuche (war 4)
         try:
-            text = await client.ask(system, user_msg, max_tokens=1500)
+            # max_tokens großzügig, weil manche Modelle das 80-Wort-Limit
+            # ueberschreiten und die JSON sonst mid-string abgeschnitten wird.
+            text = await client.ask(system, user_msg, max_tokens=3000)
             parsed = _extract_json(text)
             print(f"[llm] ok    {key}", flush=True)
             return _enrich(reg, parsed)
