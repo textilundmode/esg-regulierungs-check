@@ -28,7 +28,7 @@
 | Login / Registrierung (bcrypt, SQLite) | `app.py`, `db.py` | ✅ |
 | Stammdaten-Formular (inkl. Standorte, Produktkategorien) | `templates/dashboard.html` | ✅ |
 | Stammdaten-Frage "EU-Importeur / erstmaliges Inverkehrbringen" | `templates/dashboard.html`, `db.eu_importer` | ✅ |
-| LLM-Analyse über 23 Regulierungen (Volltext + Guidelines) | `app.py` `_run_analysis_bg`, `llm.py` | ✅ |
+| LLM-Analyse über 22 Regulierungen (Volltext + Guidelines) | `app.py` `_run_analysis_bg`, `llm.py` | ✅ |
 | Result-Cache (Profil-Hash + Reg-Hash → Ergebnis) | `db.py` `analysis_cache` | ✅ |
 | Gesetzestext-Cache mit ETag / Last-Modified | `fetcher.py` `law_texts` | ✅ |
 | CSV-Export | `/download-csv` | ✅ |
@@ -169,7 +169,7 @@ Wenn ein Datum / eine Guideline-URL aktualisiert werden muss → direkt in `regu
 | `app.py` | Flask-Routen, Login, Analyse-Orchestrierung, PrefixMiddleware |
 | `llm.py` | LLM-Provider-Abstraktion (openai / ollama / anthropic / google), Prompt, Rate-Limit |
 | `fetcher.py` | HTTP-Download von Gesetzes-/Guideline-Texten, HTML/PDF-Extraktion, ETag-Cache |
-| `regulations.py` | 23 Regulierungen + Guidelines-Map + Veröffentlichungsdaten + Auswahllisten |
+| `regulations.py` | 22 Regulierungen + Guidelines-Map + Veröffentlichungsdaten + Auswahllisten |
 | `i18n.py` | Übersetzungen (6 Sprachen) |
 | `db.py` | SQLite-Schema, Migrationen, Cache-Zugriff |
 | `views.py` | Card/CSV-Renderer |
@@ -188,9 +188,9 @@ Wenn ein Datum / eine Guideline-URL aktualisiert werden muss → direkt in `regu
 
 1. https://ki-textil-mode.de/esg/ (bzw. Legacy https://schuckert.cloud/regulierungs-check) → Login-Seite laedt, Logo oben links sichtbar, Footer "© 2026 · Alle Rechte vorbehalten".
 2. Nach Login: Dashboard mit Button "Regulierungsliste" oben rechts neben "Jetzt pruefen". Rechts in der Rechts-Spalte die Checkbox "EU-Importeur / erstmaliges Inverkehrbringen in der EU".
-3. https://ki-textil-mode.de/esg/regulierungsliste → Tabelle mit 23 Zeilen, Stand = Veroeffentlichungsdatum (DD.MM.YYYY), Guidelines klickbar.
+3. https://ki-textil-mode.de/esg/regulierungsliste → Tabelle mit 22 Zeilen, Stand = Veroeffentlichungsdatum (DD.MM.YYYY), Guidelines klickbar.
 4. Footer unten rechts: `<details>` "Hinweis" → auf Klick Popover mit Claude-Code-/Codex-Text.
-5. "Jetzt pruefen" laeuft bis 23/23 durch, keine rote ✕-Fehlerkarte. "Greifende Stelle" max. ~280 Zeichen.
+5. "Jetzt pruefen" laeuft bis 22/22 durch, keine rote ✕-Fehlerkarte. "Greifende Stelle" max. ~280 Zeichen.
 
 ---
 
